@@ -1,9 +1,53 @@
-<!DOCTYPE html>
+#!/usr/bin/env node
+/* ============================================================
+   apply-frontend-slides.cjs
+   Rebuilds every lesson-<NN>-<slug>/storybook.html as a zero-dependency,
+   single-file interactive storybook using the "frontend-slides"
+   approach (github.com/zarazhangrui/frontend-slides):
+     - single HTML file, inline CSS/JS (fixes the broken
+       ../../assets/css|js references)
+     - playful "sticker" design system (charcoal outlines,
+       hard offset shadows, chunky Fredoka display type)
+     - bouncy staggered page transitions, bobbing decorations
+     - prefers-reduced-motion support
+     - built-in runtime: prev/next, dots, keyboard, swipe,
+       fullscreen (F), and the end-of-story quiz with confetti
+   Slide DATA (story text, verses, images, quizzes) is copied
+   verbatim from the existing files — no content changes.
+   Originals are safe in git history.
+   Usage: node apply-frontend-slides.cjs
+   ============================================================ */
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = __dirname;
+const LESSON_DIRS = fs.readdirSync(ROOT)
+  .filter(d => d.startsWith('lesson-') && fs.existsSync(path.join(ROOT, d, 'storybook.html')))
+  .sort();
+
+/* ---------------- extraction ---------------- */
+function extract(file) {
+  const html = fs.readFileSync(file, 'utf8');
+  const blocks = html.match(/<script>([\s\S]*?)<\/script>/g) || [];
+  const dataBlock = blocks.find(b => b.includes('const slides = '));
+  if (!dataBlock) throw new Error('No slide data found in ' + file);
+  const inner = dataBlock.replace(/^<script>/, '').replace(/<\/script>$/, '');
+  const i = inner.indexOf('const slides = ');
+  const end = inner.indexOf('\n];', i);
+  if (end === -1) throw new Error('Slide array does not end with ]; in ' + file);
+  const slidesSrc = inner.slice(i, end + 3).trim();
+  const title = (html.match(/<title>([^<]+)<\/title>/) || [])[1] || 'Storybook';
+  return { title, slidesSrc };
+}
+
+/* ---------------- template ---------------- */
+function template({ title, slidesSrc }) {
+return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zechariah Is Promised a Son</title>
+<title>${title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -178,178 +222,7 @@ h1,h2,h3,.btn,.page-indicator{font-family:'Fredoka','Atkinson Hyperlegible',sans
 <button id="fs-toggle" aria-label="Toggle fullscreen" title="Fullscreen (F key)"></button>
 
 <script>
-const slides = [
-  {
-    "img": "images/slide-01.jpg",
-    "title": "Zechariah Is Promised a Son",
-    "text": [
-      "A story from the book of Luke, chapter 1."
-    ]
-  },
-  {
-    "img": "",
-    "title": "Ice Breaker — No Talking!",
-    "text": [
-      "<strong>For the next 30 seconds, no one is allowed to speak!</strong>",
-      "You can use gestures and hand motions, but no words!",
-      "Try to tell the person next to you what you had for breakfast — without talking.",
-      "After 30 seconds: <strong>How did that feel? Frustrating?</strong>",
-      "Today, a man named Zechariah couldn't speak for MONTHS. Let's find out why!"
-    ]
-  },
-  {
-    "img": "images/slide-02.jpg",
-    "title": "Zechariah and Elizabeth",
-    "text": [
-      "There was a priest named Zechariah who was married to Elizabeth.",
-      "They both loved and obeyed God, but they had no children."
-    ]
-  },
-  {
-    "img": "images/slide-03.jpg",
-    "title": "Too Old for a Family",
-    "text": [
-      "Zechariah and Elizabeth were now very old.",
-      "They had given up hope of ever having a child."
-    ]
-  },
-  {
-    "img": "images/slide-04.jpg",
-    "title": "The Priest's Duty",
-    "text": [
-      "One day, Zechariah's group of priests was on duty at the Temple.",
-      "They cast lots to see who would go into the holy place to burn incense."
-    ]
-  },
-  {
-    "img": "images/slide-05.jpg",
-    "title": "The Lots Were Cast",
-    "text": [
-      "The lots were cast to see who would be chosen.",
-      "Everyone waited to see which priest God would select."
-    ]
-  },
-  {
-    "img": "images/slide-06.jpg",
-    "title": "Zechariah Was Chosen!",
-    "text": [
-      "Zechariah was chosen! What an honour!",
-      "He would go into the inner sanctuary of the Temple."
-    ]
-  },
-  {
-    "img": "images/slide-07.jpg",
-    "title": "Into the Temple",
-    "text": [
-      "While the worshippers prayed outside, Zechariah made his way into the Temple.",
-      "It was a holy and special moment."
-    ]
-  },
-  {
-    "img": "images/slide-08.jpg",
-    "title": "An Angel Appears!",
-    "text": [
-      "Zechariah burned incense on the altar. Suddenly, an angel appeared!",
-      "The angel stood on the right side of the altar. Zechariah was terrified!"
-    ]
-  },
-  {
-    "img": "images/slide-09.jpg",
-    "title": "Don't Be Afraid!",
-    "text": [
-      "The angel said, \"Don't be afraid! God has heard your prayer.",
-      "Elizabeth will bear you a son! You are to name him John.\""
-    ]
-  },
-  {
-    "img": "images/slide-10.jpg",
-    "title": "John Will Prepare the Way",
-    "text": [
-      "\"Your son will be filled with the Holy Spirit. He will prepare people for the coming of the Lord.\"",
-      "This was amazing news!"
-    ]
-  },
-  {
-    "img": "images/slide-11.jpg",
-    "title": "Zechariah Doubted",
-    "text": [
-      "Zechariah said, \"How can this be? I am an old man, and my wife is old too.\"",
-      "He couldn't believe the angel's message."
-    ]
-  },
-  {
-    "img": "images/slide-12.jpg",
-    "title": "Gabriel's Message",
-    "text": [
-      "The angel said, \"I am Gabriel! I stand in the presence of God.",
-      "Because you didn't believe, you will not be able to speak until the child is born.\""
-    ]
-  },
-  {
-    "img": "images/slide-13.jpg",
-    "title": "The People Waited",
-    "text": [
-      "Outside, the crowd was waiting for Zechariah to come out.",
-      "They wondered why he was taking so long."
-    ]
-  },
-  {
-    "img": "images/slide-14.jpg",
-    "title": "He Couldn't Speak!",
-    "text": [
-      "When Zechariah finally came out, he couldn't say a word!",
-      "He made gestures with his hands. The people knew he had seen a vision."
-    ]
-  },
-  {
-    "img": "images/slide-15.jpg",
-    "title": "God Keeps His Promises",
-    "text": [
-      "Zechariah doubted, but God kept His promise anyway.",
-      "Soon, John was born — the one who would prepare the way for Jesus!",
-      "<em>God always keeps His promises, even when we struggle to believe.</em>"
-    ]
-  },
-  {
-    "img": "",
-    "title": "Fun Review!",
-    "quiz": [
-      {
-        "q": "Why couldn't Zechariah speak after leaving the Temple?",
-        "options": [
-          "He was sick",
-          "He was punished for doubting the angel's message",
-          "The crowd hurt him",
-          "He forgot how to talk"
-        ],
-        "correct": 1,
-        "explanation": "Because Zechariah doubted Gabriel's message, he couldn't speak until the child was born."
-      },
-      {
-        "q": "Who appeared to Zechariah in the Temple?",
-        "options": [
-          "Moses",
-          "An angel named Gabriel",
-          "Jesus",
-          "God Himself"
-        ],
-        "correct": 1,
-        "explanation": "Gabriel, one of God's angels, appeared to Zechariah and delivered God's message."
-      },
-      {
-        "q": "What was the angel's message to Zechariah?",
-        "options": [
-          "He would lose his job",
-          "Elizabeth would give birth to a son named John",
-          "The Romans would leave",
-          "He would become king"
-        ],
-        "correct": 1,
-        "explanation": "God promised Zechariah and Elizabeth a son named John who would prepare the way for the Lord."
-      }
-    ]
-  }
-];
+const slides = ${slidesSrc.slice('const slides = '.length)}
 
 /* ---------------- engine ---------------- */
 let cur = 0;
@@ -503,7 +376,7 @@ function renderQuiz(quiz){
     if (score === quiz.length) { medal = '🏆'; msg = 'PERFECT! You are a story star!'; }
     else if (score >= quiz.length - 1) { medal = '🥇'; msg = 'Amazing work!'; }
     else if (score >= Math.ceil(quiz.length / 2)) { medal = '🥈'; msg = 'Great job!'; }
-    else { medal = '💪'; msg = 'Good try! Let\'s read the story again soon!'; }
+    else { medal = '💪'; msg = 'Good try! Let\\'s read the story again soon!'; }
     done.innerHTML = '<span class="medal">' + medal + '</span><p>' + score + ' / ' + quiz.length + ' — ' + msg + '</p>' +
       '<button class="btn" id="qreplay">Play Again 🔄</button>';
     done.style.display = 'block';
@@ -546,3 +419,17 @@ render();
 </script>
 </body>
 </html>
+`;
+}
+
+/* ---------------- run ---------------- */
+let total = 0;
+for (const dir of LESSON_DIRS) {
+  const file = path.join(ROOT, dir, 'storybook.html');
+  const { title, slidesSrc } = extract(file);
+  const n = (slidesSrc.match(/\{[^]*?,/g) || []).length; /* rough */
+  fs.writeFileSync(file, template({ title, slidesSrc }));
+  total++;
+  console.log('✔ rebuilt ' + dir + '/storybook.html  — "' + title + '"');
+}
+console.log('\\nDone: ' + total + ' storybooks rebuilt (self-contained, zero external assets).');
