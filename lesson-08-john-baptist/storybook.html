@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>John the Baptist</title>
+<style>:root{--accent:#7ba86a;--accent-light:#d8f3dc}
+/* ---------- fullscreen button ---------- */
+#fs-toggle{
+  position:fixed;bottom:18px;right:18px;z-index:9999;
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--accent,#7ba86a);background:var(--color-bg-alt,#fffdf9);
+  color:var(--accent,#7ba86a);font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+  -webkit-tap-highlight-color:transparent;user-select:none;font-family:sans-serif;
+}
+#fs-toggle:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(0,0,0,.2);background:var(--accent,#7ba86a);color:#fff}
+#fs-toggle:active{transform:scale(.94)}
+#fs-toggle.active{background:var(--accent,#7ba86a);color:#fff}
+@media print{#fs-toggle{display:none!important}}
+@media(max-width:480px){#fs-toggle{width:42px;height:42px;bottom:12px;right:12px}}
+</style>
+<style>
+/* Inline layout fallback — guarantees picture-left/text-right on desktop
+   even if an old storybooks.css is cached. External CSS still wins when fresh. */
+#bookInner{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)!important;width:100%;height:100%}
+#book{height:min(70vh,640px)!important;min-height:420px!important;overflow:hidden!important}
+.page-image{min-width:0!important;min-height:0!important;overflow:hidden!important}
+.page-text{min-width:0!important;min-height:0!important;overflow-y:auto!important;color:#2e2a24!important;background:#fffdf9!important;display:flex;flex-direction:column;justify-content:center}
+.page-text h2{color:#7ba86a!important}
+.page-text p{color:#2e2a24!important;font-size:19px;line-height:1.6}
+.page-image img{max-width:100%!important;max-height:100%!important;width:100%;height:100%;object-fit:contain}
+@media(max-width:768px){
+  #book{height:min(60vh,520px)!important;min-height:340px!important}
+  .page-text{padding:20px 24px!important}
+  .page-text p{font-size:17px}
+}
+@media(max-width:560px){
+  #book{height:78vh!important;min-height:0!important}
+  #bookInner{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:42% 58%!important}
+  .page-text{padding:14px 18px!important}
+  .page-text p{font-size:16px}
+}
+</style>
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<link rel="stylesheet" href="../../assets/css/storybooks.css?v=3">
+</head>
+<body data-grade="grad1-3">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="book" id="book">
+  <div class="nav-hint left">&#8592;</div>
+  <div class="nav-hint right">&#8594;</div>
+  <div class="book-inner" id="bookInner">
+    <div class="page-image" id="pageImage">
+      <img id="slideImg" src="" alt="Story illustration">
+    </div>
+    <div class="page-text" id="pageText">
+      <div class="page-number" id="pageNum"></div>
+      <h2 id="slideTitle"></h2>
+      <div id="slideParagraphs"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button id="prevBtn" disabled>&larr; Back</button>
+  <span class="page-indicator" id="indicator">1 / N</span>
+  <button id="nextBtn">Next &rarr;</button>
+</div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="keyboard-hint">Click anywhere on the book or use arrow keys to turn pages</div>
+<script>
+window.STORY_META = {"slug":"john-baptist","title":"John the Baptist","starsKey":"story-john-baptist"};
+const slides = [
+  {
+    "img": "images/slide-01.jpg",
+    "title": "John the Baptist",
+    "text": [
+      "A story from the book of Matthew, chapter 3."
+    ]
+  },
+  {
+    "img": "",
+    "title": "Ice Breaker — Prepare the Way!",
+    "text": [
+      "<strong>Imagine someone very important is coming to visit.</strong> A king! A president!",
+      "What would you do to get ready? Clean? Decorate? Prepare food?",
+      "Now imagine you live in the desert. How would you prepare for a king there?",
+      "John the Baptist lived in the wilderness and told people to get their HEARTS ready for Jesus. Let's find out more!"
+    ]
+  },
+  {
+    "img": "images/slide-02.jpg",
+    "title": "A Voice in the Wilderness",
+    "text": [
+      "John lived in the wilderness of Judea, just as the prophet Isaiah had said.",
+      "\"A voice of one calling in the wilderness: Prepare the way for the Lord!\""
+    ]
+  },
+  {
+    "img": "images/slide-03.jpg",
+    "title": "John's Simple Life",
+    "text": [
+      "John wore clothes made of camel hair with a leather belt.",
+      "His food was locusts and wild honey. He lived simply for God."
+    ]
+  },
+  {
+    "img": "images/slide-04.jpg",
+    "title": "Repent!",
+    "text": [
+      "John preached: \"Repent, for the kingdom of heaven has come near!\"",
+      "He told people to turn away from sin and turn back to God."
+    ]
+  },
+  {
+    "img": "images/slide-05.jpg",
+    "title": "People Came From Everywhere",
+    "text": [
+      "People from all over Judea and the River Jordan area came to hear John.",
+      "They walked for miles into the wilderness to listen to him."
+    ]
+  },
+  {
+    "img": "images/slide-06.jpg",
+    "title": "Confessing and Being Baptised",
+    "text": [
+      "People confessed their sins, and John baptised them in the River Jordan.",
+      "It was a fresh start — a new beginning with God!"
+    ]
+  },
+  {
+    "img": "images/slide-07.jpg",
+    "title": "Who Are You?",
+    "text": [
+      "Priests and Levites came to question John.",
+      "\"Are you Elijah? Are you the Prophet?\" they asked."
+    ]
+  },
+  {
+    "img": "images/slide-08.jpg",
+    "title": "I Am Not the Messiah",
+    "text": [
+      "John said, \"I am not the Messiah. I am just preparing the way for Him.\"",
+      "John was humble. He knew his role."
+    ]
+  },
+  {
+    "img": "images/slide-09.jpg",
+    "title": "Someone Greater Is Coming",
+    "text": [
+      "John explained, \"Someone greater is coming after me.",
+      "I am not worthy even to untie His sandals!\""
+    ]
+  },
+  {
+    "img": "images/slide-10.jpg",
+    "title": "Baptism of the Holy Spirit",
+    "text": [
+      "John said, \"I baptise with water, but the One coming after me will baptise you with the Holy Spirit.\""
+    ]
+  },
+  {
+    "img": "images/slide-11.jpg",
+    "title": "Warning the Pharisees",
+    "text": [
+      "John warned the Pharisees and Sadducees: \"Don't just say you follow God — live like it!\""
+    ]
+  },
+  {
+    "img": "images/slide-12.jpg",
+    "title": "God Can Raise Up Children",
+    "text": [
+      "John told them, \"Don't say 'Abraham is our father.' God can make children from these stones!\"",
+      "What matters is your heart, not your family name."
+    ]
+  },
+  {
+    "img": "images/slide-13.jpg",
+    "title": "Good Fruit",
+    "text": [
+      "John said, \"Every tree that doesn't produce good fruit will be cut down.\"",
+      "Our actions should show that we love God."
+    ]
+  },
+  {
+    "img": "images/slide-14.jpg",
+    "title": "Share With Others",
+    "text": [
+      "John told the people, \"If you have two coats, share one with someone who has none.\"",
+      "\"If you have food, share with the hungry.\""
+    ]
+  },
+  {
+    "img": "images/slide-15.jpg",
+    "title": "Tax Collectors",
+    "text": [
+      "Even tax collectors came to be baptised. John told them: \"Don't cheat people.\"",
+      "Be honest in your work!"
+    ]
+  },
+  {
+    "img": "images/slide-16.jpg",
+    "title": "Soldiers",
+    "text": [
+      "Soldiers also came. John told them: \"Don't bully people. Be content with what you have.\""
+    ]
+  },
+  {
+    "img": "images/slide-17.jpg",
+    "title": "Jesus Comes to John",
+    "text": [
+      "One day, Jesus came to the River Jordan to be baptised by John.",
+      "John said, \"Look! The Lamb of God who takes away the sin of the world!\""
+    ]
+  },
+  {
+    "img": "images/slide-18.jpg",
+    "title": "Get Ready for Jesus",
+    "text": [
+      "John spent his whole life preparing people for Jesus.",
+      "<em>We can prepare our hearts too — by saying sorry, turning to God, and living for Him.</em>"
+    ]
+  },
+  {
+    "img": "",
+    "title": "Fun Review!",
+    "quiz": [
+      {
+        "q": "What did John the Baptist wear for clothes?",
+        "options": [
+          "Silk robes",
+          "Clothes made of camel hair with a leather belt",
+          "Regular shepherd clothes",
+          "Priest garments"
+        ],
+        "correct": 1,
+        "explanation": "John wore a distinctive outfit of camel hair with a leather belt."
+      },
+      {
+        "q": "What was John's main message to the people?",
+        "options": [
+          "Follow me",
+          "Repent, for the kingdom of heaven has come near",
+          "Build the Temple",
+          "Share your food"
+        ],
+        "correct": 1,
+        "explanation": "John preached repentance — turn away from sin and prepare your hearts for Jesus."
+      },
+      {
+        "q": "Who came to be baptised by John?",
+        "options": [
+          "Only the poor",
+          "Only soldiers",
+          "People from all over Judea",
+          "Only kings"
+        ],
+        "correct": 2,
+        "explanation": "People from all over Judea and the River Jordan area came to hear John."
+      }
+    ]
+  }
+];
+</script>
+<script src="../../assets/js/games.js?v=3"></script>
+<script src="../../assets/js/storybook.js?v=3"></script>
+<script>Storybook.init();</script>
+
+<script>
+(function(){
+  if (document.getElementById('fs-toggle')) return;
+  var btn = document.createElement('button');
+  btn.id = 'fs-toggle';
+  btn.setAttribute('aria-label', 'Toggle fullscreen');
+  btn.setAttribute('title', 'Fullscreen (F key)');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var exitIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="4 8 4 3 9 3"/><polyline points="20 16 20 21 15 21"/><line x1="4" y1="3" x2="11" y2="10"/><line x1="20" y1="21" x2="13" y2="14"/></svg>';
+  function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || document.mozFullScreenElement); }
+  function enter(){ var el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||el.mozRequestFullScreen).call(el).catch(function(){}); }
+  function exit(){ (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen||document.mozCancelFullScreen).call(document).catch(function(){}); }
+  function update(){
+    if(isFS()){ btn.innerHTML=exitIcon; btn.classList.add('active'); btn.setAttribute('title','Exit fullscreen (F or Esc)'); }
+    else { btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'; btn.classList.remove('active'); btn.setAttribute('title','Fullscreen (F key)'); }
+  }
+  btn.addEventListener('click',function(){ isFS()?exit():enter(); });
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('msfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){
+      var tag=document.activeElement?document.activeElement.tagName:'';
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault(); isFS()?exit():enter();
+    }
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+
+</body>
+</html>

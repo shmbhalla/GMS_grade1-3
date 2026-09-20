@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Jesus Feeds 5000</title>
+<style>:root{--accent:#7ba86a;--accent-light:#d8f3dc}
+/* ---------- fullscreen button ---------- */
+#fs-toggle{
+  position:fixed;bottom:18px;right:18px;z-index:9999;
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--accent,#7ba86a);background:var(--color-bg-alt,#fffdf9);
+  color:var(--accent,#7ba86a);font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+  -webkit-tap-highlight-color:transparent;user-select:none;font-family:sans-serif;
+}
+#fs-toggle:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(0,0,0,.2);background:var(--accent,#7ba86a);color:#fff}
+#fs-toggle:active{transform:scale(.94)}
+#fs-toggle.active{background:var(--accent,#7ba86a);color:#fff}
+@media print{#fs-toggle{display:none!important}}
+@media(max-width:480px){#fs-toggle{width:42px;height:42px;bottom:12px;right:12px}}
+</style>
+<style>
+/* Inline layout fallback — guarantees picture-left/text-right on desktop
+   even if an old storybooks.css is cached. External CSS still wins when fresh. */
+#bookInner{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)!important;width:100%;height:100%}
+#book{height:min(70vh,640px)!important;min-height:420px!important;overflow:hidden!important}
+.page-image{min-width:0!important;min-height:0!important;overflow:hidden!important}
+.page-text{min-width:0!important;min-height:0!important;overflow-y:auto!important;color:#2e2a24!important;background:#fffdf9!important;display:flex;flex-direction:column;justify-content:center}
+.page-text h2{color:#7ba86a!important}
+.page-text p{color:#2e2a24!important;font-size:19px;line-height:1.6}
+.page-image img{max-width:100%!important;max-height:100%!important;width:100%;height:100%;object-fit:contain}
+@media(max-width:768px){
+  #book{height:min(60vh,520px)!important;min-height:340px!important}
+  .page-text{padding:20px 24px!important}
+  .page-text p{font-size:17px}
+}
+@media(max-width:560px){
+  #book{height:78vh!important;min-height:0!important}
+  #bookInner{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:42% 58%!important}
+  .page-text{padding:14px 18px!important}
+  .page-text p{font-size:16px}
+}
+</style>
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<link rel="stylesheet" href="../../assets/css/storybooks.css?v=3">
+</head>
+<body data-grade="grad1-3">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="book" id="book">
+  <div class="nav-hint left">&#8592;</div>
+  <div class="nav-hint right">&#8594;</div>
+  <div class="book-inner" id="bookInner">
+    <div class="page-image" id="pageImage">
+      <img id="slideImg" src="" alt="Story illustration">
+    </div>
+    <div class="page-text" id="pageText">
+      <div class="page-number" id="pageNum"></div>
+      <h2 id="slideTitle"></h2>
+      <div id="slideParagraphs"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button id="prevBtn" disabled>&larr; Back</button>
+  <span class="page-indicator" id="indicator">1 / N</span>
+  <button id="nextBtn">Next &rarr;</button>
+</div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="keyboard-hint">Click anywhere on the book or use arrow keys to turn pages</div>
+<script>
+window.STORY_META = {"slug":"feeds-5000","title":"Jesus Feeds 5000","starsKey":"story-feeds-5000"};
+const slides = [
+  {
+    "img": "images/slide-01.jpg",
+    "title": "Jesus Feeds 5,000",
+    "text": [
+      "A story from the book of John, chapter 6."
+    ]
+  },
+  {
+    "img": "",
+    "title": "Ice Breaker — One Lunch to Share",
+    "text": [
+      "<strong>Everyone hold up one finger.</strong> That one finger represents ONE small lunch.",
+      "Now look around the room. Imagine ONE lunch had to feed EVERYONE here.",
+      "<strong>Ridiculous, right?</strong> That's what the disciples thought too.",
+      "But today, a little boy shares his lunch — and Jesus does something amazing with it!"
+    ]
+  },
+  {
+    "img": "images/slide-02.jpg",
+    "title": "Jesus Needed Rest",
+    "text": [
+      "Jesus and His disciples were very tired. They got into a boat to find a quiet place to rest.",
+      "But a huge crowd followed them along the shore!"
+    ]
+  },
+  {
+    "img": "images/slide-03.jpg",
+    "title": "The Crowd Followed",
+    "text": [
+      "A large crowd of people watched the boat and followed it on foot.",
+      "They really wanted to be near Jesus!"
+    ]
+  },
+  {
+    "img": "images/slide-04.jpg",
+    "title": "Jesus Had Compassion",
+    "text": [
+      "When Jesus landed, He saw the huge crowd waiting for Him.",
+      "He didn't get annoyed — He felt love and pity for them."
+    ]
+  },
+  {
+    "img": "images/slide-05.jpg",
+    "title": "Jesus Taught Them",
+    "text": [
+      "Jesus went up into the hills and began teaching the people.",
+      "He told them about God's love and the kingdom of heaven."
+    ]
+  },
+  {
+    "img": "images/slide-06.jpg",
+    "title": "Healing the Sick",
+    "text": [
+      "Jesus also healed many sick people among the crowd.",
+      "No one who came to Jesus was turned away."
+    ]
+  },
+  {
+    "img": "images/slide-07.jpg",
+    "title": "5,000 Men Plus Women and Children",
+    "text": [
+      "There were about 5,000 men in the crowd, plus women and children!",
+      "That's a LOT of people!"
+    ]
+  },
+  {
+    "img": "images/slide-08.jpg",
+    "title": "It's Getting Late",
+    "text": [
+      "Late in the afternoon, the disciples came to Jesus.",
+      "\"Send the people away so they can go find food!\" they said."
+    ]
+  },
+  {
+    "img": "images/slide-09.jpg",
+    "title": "You Feed Them!",
+    "text": [
+      "Jesus replied: <strong>\"They don't need to go away. YOU give them something to eat!\"</strong>",
+      "The disciples were shocked!"
+    ]
+  },
+  {
+    "img": "images/slide-10.jpg",
+    "title": "Where Can We Buy Bread?",
+    "text": [
+      "Jesus asked Philip, \"Where can we buy bread to feed all these people?\"",
+      "Philip was thinking about all the money it would cost."
+    ]
+  },
+  {
+    "img": "images/slide-11.jpg",
+    "title": "It Would Cost a Fortune!",
+    "text": [
+      "Philip answered, \"Eight months of wages wouldn't be enough to feed everyone even a small piece!\"",
+      "It seemed impossible!"
+    ]
+  },
+  {
+    "img": "images/slide-12.jpg",
+    "title": "A Little Boy's Lunch",
+    "text": [
+      "Andrew spoke up: \"There's a boy here with five small loaves and two fish.\"",
+      "\"But what good is that for so many people?\""
+    ]
+  },
+  {
+    "img": "images/slide-13.jpg",
+    "title": "Everyone Sit Down",
+    "text": [
+      "Jesus said, \"Have everyone sit down in groups of fifty.\"",
+      "The people sat down on the grassy hillside."
+    ]
+  },
+  {
+    "img": "images/slide-14.jpg",
+    "title": "Jesus Gave Thanks",
+    "text": [
+      "Jesus took the five loaves and two fish.",
+      "He looked up to heaven and gave thanks to God."
+    ]
+  },
+  {
+    "img": "images/slide-15.jpg",
+    "title": "Breaking the Bread",
+    "text": [
+      "Jesus broke the bread into pieces and gave them to His disciples.",
+      "But the bread kept multiplying! He kept breaking and breaking!"
+    ]
+  },
+  {
+    "img": "images/slide-16.jpg",
+    "title": "Passing Out the Food",
+    "text": [
+      "The disciples passed out the bread and fish to the whole crowd.",
+      "Everyone ate as much as they wanted!"
+    ]
+  },
+  {
+    "img": "images/slide-17.jpg",
+    "title": "Everyone Ate Until Full",
+    "text": [
+      "All the people ate until they were no longer hungry.",
+      "Five loaves and two fish — feeding thousands!"
+    ]
+  },
+  {
+    "img": "images/slide-18.jpg",
+    "title": "Twelve Baskets Left Over!",
+    "text": [
+      "Jesus said, \"Gather the leftovers so nothing is wasted.\"",
+      "They filled TWELVE baskets with leftover pieces!"
+    ]
+  },
+  {
+    "img": "images/slide-19.jpg",
+    "title": "The Disciples Went Ahead",
+    "text": [
+      "Jesus told His disciples to get into the boat and go to the other side.",
+      "He stayed behind to pray."
+    ]
+  },
+  {
+    "img": "images/slide-20.jpg",
+    "title": "Jesus Prayed Alone",
+    "text": [
+      "After the crowds left, Jesus went up on a hillside by Himself to pray.",
+      "He needed time alone with His Father."
+    ]
+  },
+  {
+    "img": "images/slide-21.jpg",
+    "title": "Nothing Is Too Small for Jesus",
+    "text": [
+      "A little boy shared his small lunch. Jesus used it to feed thousands.",
+      "<em>When we give what we have to Jesus — even if it seems small — He can do amazing things with it.</em>"
+    ]
+  },
+  {
+    "img": "",
+    "title": "Fun Review!",
+    "quiz": [
+      {
+        "q": "How many loaves and fish did the boy bring?",
+        "options": [
+          "Ten loaves and five fish",
+          "Five loaves and two fish",
+          "Two loaves and five fish",
+          "Seven loaves and three fish"
+        ],
+        "correct": 1,
+        "explanation": "A young boy shared five small loaves and two fish."
+      },
+      {
+        "q": "How many baskets of leftovers were collected?",
+        "options": [
+          "Seven baskets",
+          "Nine baskets",
+          "Twelve baskets",
+          "Ten baskets"
+        ],
+        "correct": 2,
+        "explanation": "They filled twelve baskets with leftover pieces."
+      },
+      {
+        "q": "What lesson does this story teach about small things?",
+        "options": [
+          "Small things don't matter",
+          "A little boy shared his lunch and Jesus did amazing things with it",
+          "We should always buy our own food",
+          "It's better to keep your lunch to yourself"
+        ],
+        "correct": 1,
+        "explanation": "Even a small offering was enough for Jesus to feed thousands."
+      }
+    ]
+  }
+];
+</script>
+<script src="../../assets/js/games.js?v=3"></script>
+<script src="../../assets/js/storybook.js?v=3"></script>
+<script>Storybook.init();</script>
+
+<script>
+(function(){
+  if (document.getElementById('fs-toggle')) return;
+  var btn = document.createElement('button');
+  btn.id = 'fs-toggle';
+  btn.setAttribute('aria-label', 'Toggle fullscreen');
+  btn.setAttribute('title', 'Fullscreen (F key)');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var exitIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="4 8 4 3 9 3"/><polyline points="20 16 20 21 15 21"/><line x1="4" y1="3" x2="11" y2="10"/><line x1="20" y1="21" x2="13" y2="14"/></svg>';
+  function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || document.mozFullScreenElement); }
+  function enter(){ var el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||el.mozRequestFullScreen).call(el).catch(function(){}); }
+  function exit(){ (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen||document.mozCancelFullScreen).call(document).catch(function(){}); }
+  function update(){
+    if(isFS()){ btn.innerHTML=exitIcon; btn.classList.add('active'); btn.setAttribute('title','Exit fullscreen (F or Esc)'); }
+    else { btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'; btn.classList.remove('active'); btn.setAttribute('title','Fullscreen (F key)'); }
+  }
+  btn.addEventListener('click',function(){ isFS()?exit():enter(); });
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('msfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){
+      var tag=document.activeElement?document.activeElement.tagName:'';
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault(); isFS()?exit():enter();
+    }
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+
+</body>
+</html>

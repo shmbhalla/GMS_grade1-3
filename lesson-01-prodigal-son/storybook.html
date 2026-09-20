@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Prodigal Son</title>
+<style>
+  :root { --accent:#7ba86a;--accent-light:#d8f3dc }
+
+/* ---------- fullscreen button ---------- */
+#fs-toggle{
+  position:fixed;bottom:18px;right:18px;z-index:9999;
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--accent,#7ba86a);background:var(--color-bg-alt,#fffdf9);
+  color:var(--accent,#7ba86a);font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+  -webkit-tap-highlight-color:transparent;user-select:none;font-family:sans-serif;
+}
+#fs-toggle:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(0,0,0,.2);background:var(--accent,#7ba86a);color:#fff}
+#fs-toggle:active{transform:scale(.94)}
+#fs-toggle.active{background:var(--accent,#7ba86a);color:#fff}
+@media print{#fs-toggle{display:none!important}}
+@media(max-width:480px){#fs-toggle{width:42px;height:42px;bottom:12px;right:12px}}
+</style>
+<style>
+/* Inline layout fallback — guarantees picture-left/text-right on desktop
+   even if an old storybooks.css is cached. External CSS still wins when fresh. */
+#bookInner{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)!important;width:100%;height:100%}
+#book{height:min(70vh,640px)!important;min-height:420px!important;overflow:hidden!important}
+.page-image{min-width:0!important;min-height:0!important;overflow:hidden!important}
+.page-text{min-width:0!important;min-height:0!important;overflow-y:auto!important;color:#2e2a24!important;background:#fffdf9!important;display:flex;flex-direction:column;justify-content:center}
+.page-text h2{color:#7ba86a!important}
+.page-text p{color:#2e2a24!important;font-size:19px;line-height:1.6}
+.page-image img{max-width:100%!important;max-height:100%!important;width:100%;height:100%;object-fit:contain}
+@media(max-width:768px){
+  #book{height:min(60vh,520px)!important;min-height:340px!important}
+  .page-text{padding:20px 24px!important}
+  .page-text p{font-size:17px}
+}
+@media(max-width:560px){
+  #book{height:78vh!important;min-height:0!important}
+  #bookInner{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:42% 58%!important}
+  .page-text{padding:14px 18px!important}
+  .page-text p{font-size:16px}
+}
+</style>
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<link rel="stylesheet" href="../../assets/css/storybooks.css?v=3">
+</head>
+<body data-grade="grad1-3">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="book" id="book">
+  <div class="nav-hint left">&#8592;</div>
+  <div class="nav-hint right">&#8594;</div>
+  <div class="book-inner" id="bookInner">
+    <div class="page-image" id="pageImage">
+      <img id="slideImg" src="" alt="Story illustration">
+    </div>
+    <div class="page-text" id="pageText">
+      <div class="page-number" id="pageNum"></div>
+      <h2 id="slideTitle"></h2>
+      <div id="slideParagraphs"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button id="prevBtn" disabled>&larr; Back</button>
+  <span class="page-indicator" id="indicator">1 / N</span>
+  <button id="nextBtn">Next &rarr;</button>
+</div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="keyboard-hint">Click anywhere on the book or use arrow keys to turn pages</div>
+<script>
+window.STORY_META = {
+  slug: "story-prodigal-son",
+  title: "The Prodigal Son",
+  starsKey: "story-prodigal-son"
+};
+const slides = [
+  { // slide-02 — Title
+    img: "images/slide-01.jpg",
+    title: "The Prodigal Son",
+    text: [
+      "A story Jesus told,<br>from the book of Luke, chapter 15."
+    ],
+    verse: "Luke 15:11-32"
+  },
+  { // slide-03 — Ice Breaker (no image)
+    img: "",
+    title: "Ice Breaker — Have You Ever Been Lost?",
+    text: [
+      "<strong>Raise your hand</strong> if you have ever been lost — even for just a little while!",
+      "Maybe in a shop? At the park? Somewhere new?",
+      "<strong>Now turn to the person next to you</strong> and tell them: <em>How did you feel when you were lost? How did you feel when you were found?</em>",
+      "Today's story is about someone who got lost — not in a shop or a park — but lost in a much bigger way. And about someone who never stopped looking for him."
+    ],
+    verse: ""
+  },
+  { // slide-04
+    img: "images/slide-02.jpg",
+    title: "A Happy Home",
+    text: [
+      "Once there was a kind father who had two sons. They all lived together on a big farm with green fields and happy animals.",
+      "The father loved both of his sons very, very much."
+    ],
+    verse: "Luke 15:11"
+  },
+  { // slide-04
+    img: "images/slide-03.jpg",
+    title: "The Younger Son Was Unhappy",
+    text: [
+      "But the younger son looked out at the farm and felt unhappy. He looked far into the distance and dreamed of a different life.",
+      "\"I don't want to stay here,\" he thought. \"I want to see the world!\""
+    ],
+    verse: ""
+  },
+  { // slide-05
+    img: "images/slide-04.jpg",
+    title: "He Demands His Inheritance",
+    text: [
+      "One day, the younger son went to his father and said something very hurtful.",
+      "\"Father, give me my share of the money now. I don't want to wait.\"",
+      "The father's heart was filled with sadness, but he listened."
+    ],
+    verse: "Luke 15:12"
+  },
+  { // slide-06
+    img: "images/slide-05.jpg",
+    title: "The Father Gives His Son the Money",
+    text: [
+      "The father placed the heavy bag of coins into his son's hands. His eyes were full of tears, but he did not stop his son.",
+      "He knew his boy had to make his own choices."
+    ],
+    verse: ""
+  },
+  { // slide-07
+    img: "images/slide-06.jpg",
+    title: "The Son Leaves Home",
+    text: [
+      "The younger son packed his bags and walked away from home. He did not look back.",
+      "Down the dusty road he went, leaving his father and his brother behind."
+    ],
+    verse: "Luke 15:13"
+  },
+  { // slide-08
+    img: "images/slide-07.jpg",
+    title: "Father Watches From the Rooftop",
+    text: [
+      "The father climbed up to the rooftop and watched as his son grew smaller and smaller in the distance.",
+      "His heart ached with love for the boy who was walking away."
+    ],
+    verse: ""
+  },
+  { // slide-09
+    img: "images/slide-08.jpg",
+    title: "A Faraway Land",
+    text: [
+      "The son walked for many, many days until he reached a faraway land. Everything was new and exciting!",
+      "Nobody knew who he was. He felt free at last!"
+    ],
+    verse: ""
+  },
+  { // slide-10
+    img: "images/slide-09.jpg",
+    title: "He Enters a Big City",
+    text: [
+      "He entered a huge city with busy streets, bright lights, and noisy markets. So many things to see and do!",
+      "The younger son smiled. This was the life he had dreamed about."
+    ],
+    verse: ""
+  },
+  { // slide-11
+    img: "images/slide-10.jpg",
+    title: "New Friends",
+    text: [
+      "It didn't take long for the son to find new friends. They gathered around him, laughing and smiling.",
+      "They loved being with him — especially since he had so much money to share!"
+    ],
+    verse: ""
+  },
+  { // slide-12
+    img: "images/slide-11.jpg",
+    title: "Spending Money on Wild Living",
+    text: [
+      "Day after day, the son spent his money on parties and fun. Fancy clothes, delicious food, everything his heart desired.",
+      "He never said no to anything."
+    ],
+    verse: ""
+  },
+  { // slide-13
+    img: "images/slide-12.jpg",
+    title: "The Party Lifestyle",
+    text: [
+      "Every night was loud music, dancing, and laughing until late.",
+      "The younger son was living his dream — or so he thought."
+    ],
+    verse: ""
+  },
+  { // slide-14
+    img: "images/slide-13.jpg",
+    title: "A Famine Hits the Land",
+    text: [
+      "Then one day, everything changed. A terrible famine came to the land. The crops dried up and the food ran out.",
+      "Nobody had anything to spare."
+    ],
+    verse: "Luke 15:14"
+  },
+  { // slide-15
+    img: "images/slide-14.jpg",
+    title: "The Money Runs Out",
+    text: [
+      "The younger son looked inside his money bag. It was empty. All the coins were gone.",
+      "He had spent everything on parties and fun — and now he had nothing left."
+    ],
+    verse: ""
+  },
+  { // slide-16
+    img: "images/slide-15.jpg",
+    title: "His Friends Desert Him",
+    text: [
+      "One by one, his so-called friends walked away. Nobody wanted to be with him anymore.",
+      "Now that his money was gone, they had no use for him. The son was all alone."
+    ],
+    verse: ""
+  },
+  { // slide-17
+    img: "images/slide-16.jpg",
+    title: "Looking for Work",
+    text: [
+      "With no money and no friends, the son left the city. He walked into the countryside, looking for any job he could find.",
+      "His stomach growled with hunger."
+    ],
+    verse: ""
+  },
+  { // slide-18
+    img: "images/slide-17.jpg",
+    title: "Feeding the Pigs",
+    text: [
+      "A farmer gave him a job — the only one he could find. He had to feed the pigs.",
+      "For a Jewish boy, this was the worst, dirtiest job imaginable. He felt so ashamed."
+    ],
+    verse: "Luke 15:15"
+  },
+  { // slide-19
+    img: "images/slide-18.jpg",
+    title: "The Lowest Point",
+    text: [
+      "The son stood in the mud with the smelly pigs. He looked at his dirty hands and torn clothes.",
+      "Just months ago, he had worn fancy robes and eaten at fancy tables. Now look at him."
+    ],
+    verse: ""
+  },
+  { // slide-20
+    img: "images/slide-19.jpg",
+    title: "Hungry and Alone",
+    text: [
+      "He was so hungry that even the pods the pigs were eating looked good to him. Nobody gave him anything.",
+      "He would have traded everything for just one meal."
+    ],
+    verse: "Luke 15:16"
+  },
+  { // slide-21
+    img: "images/slide-20.jpg",
+    title: "He Remembers His Father's House",
+    text: [
+      "Then, like a light turning on in his heart, the son remembered his father's house.",
+      "Even the servants there had plenty of food — more than enough! While he was starving."
+    ],
+    verse: "Luke 15:17"
+  },
+  { // slide-22
+    img: "images/slide-21.jpg",
+    title: "He Decides to Go Home",
+    text: [
+      "The son made the bravest decision of his life.",
+      "\"I will go back to my father. I'll tell him: Father, I have sinned against heaven and against you. I am not worthy to be called your son. Just let me be one of your servants.\""
+    ],
+    verse: "Luke 15:18-19"
+  },
+  { // slide-23
+    img: "images/slide-22.jpg",
+    title: "The Father Sees Him Coming",
+    text: [
+      "So the son started the long journey home. And while he was still far, far away — his father SAW him!",
+      "The father had been watching and waiting every single day, hoping his son would come back."
+    ],
+    verse: "Luke 15:20"
+  },
+  { // slide-24
+    img: "images/slide-23.jpg",
+    title: "The Father Runs to Greet Him",
+    text: [
+      "The father hitched up his robes and RAN. Grown men didn't run in those days — it was undignified.",
+      "But the father didn't care. He ran as fast as he could to his lost boy!"
+    ],
+    verse: ""
+  },
+  { // slide-25
+    img: "images/slide-24.jpg",
+    title: "A Loving Embrace",
+    text: [
+      "The father threw his arms around his son and hugged him tight. He kissed him again and again.",
+      "The son cried and said, \"Father, I have sinned against heaven and against you.\""
+    ],
+    verse: "Luke 15:20-21"
+  },
+  { // slide-26
+    img: "images/slide-25.jpg",
+    title: "The Son Confesses",
+    text: [
+      "\"I was so wrong, Father. Please, just let me be one of your servants.\"",
+      "He meant every word from the bottom of his heart."
+    ],
+    verse: "Luke 15:21"
+  },
+  { // slide-27
+    img: "images/slide-26.jpg",
+    title: "The Best Robe! A Ring! Sandals!",
+    text: [
+      "But the father didn't listen to the \"let me be a servant\" part. He shouted to his servants:",
+      "\"Quick! Bring the best robe and put it on him! Put a ring on his finger and sandals on his feet!\""
+    ],
+    verse: "Luke 15:22"
+  },
+  { // slide-28
+    img: "images/slide-27.jpg",
+    title: "The Celebration Feast",
+    text: [
+      "\"Let's have a feast! Kill the fattened calf! We must celebrate!\" the father cried.",
+      "\"For my son was dead and is alive again! He was lost and now he is found!\" And the music and dancing began."
+    ],
+    verse: "Luke 15:23-24"
+  },
+  { // slide-29
+    img: "images/slide-28.jpg",
+    title: "The Older Brother Returns",
+    text: [
+      "The older brother came home from working in the field and heard music and dancing. He asked a servant, \"What is going on?\"",
+      "The servant said, \"Your brother has come home, and your father is celebrating!\""
+    ],
+    verse: "Luke 15:25-27"
+  },
+  { // slide-30
+    img: "images/slide-29.jpg",
+    title: "The Older Brother Is Angry",
+    text: [
+      "The older brother was furious. He would not go inside.",
+      "When his father came out to plead with him, he said: \"I have worked for you all these years and never disobeyed — but you never gave me a party! This son who wasted everything gets a feast?\""
+    ],
+    verse: "Luke 15:28-30"
+  },
+  { // slide-31
+    img: "images/slide-30.jpg",
+    title: "The Father's Loving Words",
+    text: [
+      "\"My dear son,\" the father said, \"you are always with me, and everything I have is yours. But we HAD to celebrate!\"",
+      "\"Your brother was lost and now he is found. He was dead and now he is alive!\""
+    ],
+    verse: "Luke 15:31-32"
+  },
+  { // slide-32 — Text-only conclusion (no image)
+    img: "",
+    title: "He Was Lost and Is Found",
+    text: [
+      "The younger son was home, safe and loved. The older son had to decide: would he join the party?",
+      "Jesus left the story there — because the ending is up to us.",
+      "<em>Will we forgive like the father? Will we celebrate when someone comes home?</em>"
+    ],
+    verse: ""
+  },
+{"img":"","title":"Fun Review!","quiz":[{"q":"What did the younger son ask his father for?","options":["To take a trip","His share of the money","A new job","A pet lamb"],"correct":1,"explanation":"He wanted his share of the inheritance right away."},{"q":"After wasting everything, what did the son decide to do?","options":["Run away again","Go home to his father","Become a king","Stay in the fields"],"correct":1,"explanation":"He remembered his father’s love and went home!"},{"q":"How did the father react when his son came home?","options":["He was angry","He hid from him","He ran to hug him and threw a party","He sent him away"],"correct":2,"explanation":"The father loved him and celebrated his return!"}]}
+];
+</script>
+<script src="../../assets/js/games.js?v=3"></script>
+<script src="../../assets/js/storybook.js?v=3"></script>
+<script>Storybook.init();</script>
+
+<script>
+(function(){
+  if (document.getElementById('fs-toggle')) return;
+  var btn = document.createElement('button');
+  btn.id = 'fs-toggle';
+  btn.setAttribute('aria-label', 'Toggle fullscreen');
+  btn.setAttribute('title', 'Fullscreen (F key)');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var exitIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="4 8 4 3 9 3"/><polyline points="20 16 20 21 15 21"/><line x1="4" y1="3" x2="11" y2="10"/><line x1="20" y1="21" x2="13" y2="14"/></svg>';
+  function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || document.mozFullScreenElement); }
+  function enter(){ var el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||el.mozRequestFullScreen).call(el).catch(function(){}); }
+  function exit(){ (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen||document.mozCancelFullScreen).call(document).catch(function(){}); }
+  function update(){
+    if(isFS()){ btn.innerHTML=exitIcon; btn.classList.add('active'); btn.setAttribute('title','Exit fullscreen (F or Esc)'); }
+    else { btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'; btn.classList.remove('active'); btn.setAttribute('title','Fullscreen (F key)'); }
+  }
+  btn.addEventListener('click',function(){ isFS()?exit():enter(); });
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('msfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){
+      var tag=document.activeElement?document.activeElement.tagName:'';
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault(); isFS()?exit():enter();
+    }
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fruit of the Holy Spirit — The Garden</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<style>
+  :root {
+    --accent: #c9a87c;
+    --accent-light: #e8dccc;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Atkinson Hyperlegible','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#faf8f3; color:#2e2a24; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+    padding: var(--space-xl) var(--space-md);
+    overflow-x:hidden;
+  }
+  .container { max-width:900px; width:100%; text-align:center; }
+
+  /* Hero */
+  .hero-title {
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(28px,5vw,44px);
+    color:var(--accent,#c9a87c);
+    margin-bottom:var(--space-sm);
+    line-height:1.2;
+  }
+  .hero-subtitle {
+    font-size:var(--text-base);
+    color:#8a8078;
+    margin-bottom:var(--space-lg);
+    max-width:600px;
+    margin-left:auto; margin-right:auto;
+    line-height:1.6;
+  }
+  .master-verse {
+    background:#fff;
+    border-radius:var(--radius-lg);
+    padding:var(--space-lg);
+    margin-bottom:var(--space-xl);
+    box-shadow:var(--shadow-md);
+    border-left:6px solid var(--accent,#c9a87c);
+    text-align:left;
+    max-width:700px;
+    margin-left:auto; margin-right:auto;
+  }
+  .master-verse p {
+    font-size:16px;
+    line-height:1.7;
+    color:#2e2a24;
+    font-style:italic;
+  }
+  .master-verse .ref {
+    display:block;
+    text-align:right;
+    font-size:14px;
+    font-weight:700;
+    color:#5a8c3a;
+    margin-top:var(--space-sm);
+    font-style:normal;
+  }
+
+  /* Stars total bar */
+  .total-stars-bar {
+    display:inline-flex;
+    align-items:center;
+    gap:var(--space-sm);
+    background:#fff;
+    border-radius:var(--radius-pill);
+    padding:var(--space-xs) var(--space-md);
+    margin-bottom:var(--space-lg);
+    box-shadow:var(--shadow-sm);
+    font-size:14px;
+    font-weight:600;
+    color:#f5a623;
+    border:2px solid rgba(245,166,35,0.2);
+  }
+  .progress-track {
+    width:200px; height:12px;
+    background:#f0ece4;
+    border-radius:6px;
+    overflow:hidden;
+    position:relative;
+  }
+  .progress-fill-bar {
+    height:100%;
+    background:linear-gradient(90deg,#f5a623,#e8735a);
+    border-radius:6px;
+    transition:width 0.5s ease;
+  }
+
+  /* Instructions */
+  .instructions {
+    background:var(--color-bg-alt);
+    border-radius:var(--radius-lg);
+    padding:var(--space-lg);
+    margin-bottom:var(--space-xl);
+    box-shadow:var(--shadow-sm);
+    text-align:left;
+    max-width:700px;
+    margin-left:auto; margin-right:auto;
+  }
+  .instructions h3 {
+    font-family:'Fredoka',sans-serif;
+    font-size:18px;
+    color:var(--accent,#c9a87c);
+    margin-bottom:var(--space-sm);
+  }
+  .instructions ul {
+    list-style:none;
+    padding:0;
+  }
+  .instructions li {
+    font-size:15px;
+    line-height:1.5;
+    padding:var(--space-xs) 0;
+    color:#2e2a24;
+  }
+  .instructions li::before {
+    content:'';
+    margin-right:var(--space-sm);
+  }
+
+  /* Fruit cards grid */
+  .fruit-grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:var(--space-md);
+    margin-bottom:var(--space-xl);
+  }
+  @media(max-width:640px){ .fruit-grid{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:420px){ .fruit-grid{grid-template-columns:1fr;} }
+
+  .fruit-card {
+    background:#fff;
+    border-radius:var(--radius-lg);
+    padding:var(--space-lg) var(--space-md);
+    box-shadow:var(--shadow-md);
+    cursor:pointer;
+    transition:transform 0.3s ease,box-shadow 0.3s ease;
+    text-decoration:none;
+    color:inherit;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:180px;
+    justify-content:center;
+  }
+  .fruit-card:hover {
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-lg);
+  }
+  .fruit-card .fruit-emoji {
+    font-size:40px;
+    margin-bottom:var(--space-sm);
+  }
+  .fruit-card .fruit-name {
+    font-family:'Fredoka',sans-serif;
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:var(--space-xs);
+  }
+  .fruit-card .fruit-ref {
+    font-size:12px;
+    color:#8a8078;
+    margin-bottom:var(--space-sm);
+  }
+  .fruit-card .fruit-stars {
+    font-size:16px;
+    margin-top:var(--space-xs);
+  }
+  .fruit-card .fruit-num {
+    font-size:11px;
+    font-weight:700;
+    border-radius:var(--radius-pill);
+    padding:2px 10px;
+    margin-bottom:var(--space-sm);
+    color:#fff;
+  }
+
+  footer {
+    margin-top:auto;
+    padding-top:var(--space-xl);
+    color:#8a8078;
+    font-size:13px;
+  }
+  footer a { color:#5a8c3a; }
+
+  /* Particle bg for index */
+  .particle-bg {
+    position:fixed; top:0;left:0;right:0;bottom:0;
+    pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .particle {
+    position:absolute;
+    font-size:24px;
+    opacity:0.15;
+    animation:idxFloat linear infinite;
+  }
+  @keyframes idxFloat {
+    0%   { transform:translateY(-60px) rotate(0deg); }
+    100% { transform:translateY(110vh) rotate(360deg); }
+  }
+  @media(prefers-reduced-motion:reduce){ .particle{display:none;} }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particle-bg" id="particleBg"></div>
+
+<div class="container" style="position:relative;z-index:1;">
+
+  <h1 class="hero-title">&#x1F33F; Fruit of the Holy Spirit</h1>
+  <p class="hero-subtitle">Nine beautiful fruits God grows in our hearts! Explore each one through stories, games, and fun activities.</p>
+
+  <!-- Master Verse -->
+  <div class="master-verse fade-in">
+    <p>"But the fruit of the Spirit is, love, joy, peace, longsuffering, gentleness, goodness, faithfulness, Meekness, temperance: against such there is no law."</p>
+    <span class="ref">&mdash; Galatians 5:22-23 (KJV)</span>
+  </div>
+
+  <!-- Total stars bar -->
+  <div class="total-stars-bar">
+    &#x1F33F; My Garden: <span id="totalStarsNum">0</span> of 27 stars &bull;
+    <div class="progress-track"><div class="progress-fill-bar" id="totalFillBar" style="width:0%"></div></div>
+  </div>
+
+  <!-- How to explore instructions -->
+  <div class="instructions">
+    <h3>&#x1F4D6; How to Explore</h3>
+    <ul>
+      <li>&#x1F449; Click any fruit card to open that lesson!</li>
+      <li>&#x1F449; Each lesson has 6 sections: Definition, Importance, Distinction, Scenarios, Activity, and Games.</li>
+      <li>&#x1F449; Use the arrows or swipe on your phone to move between sections.</li>
+      <li>&#x1F449; Earn up to 3 stars per lesson by playing the games at the end!</li>
+    </ul>
+  </div>
+
+  <!-- 9 Fruit Cards -->
+  <div class="fruit-grid">
+
+    <!-- 01 Love -->
+    <a class="fruit-card" href="fruit-01-love.html" style="border-top:4px solid #d14a60;">
+      <span class="fruit-num" style="background:#d14a60;">01</span>
+      <span class="fruit-emoji">&#x2764;&#xFE0F;</span>
+      <span class="fruit-name" style="color:#d14a60;">Love</span>
+      <span class="fruit-ref">Galatians 5:22</span>
+      <span class="fruit-stars" id="star-01" aria-label="Love stars"></span>
+    </a>
+
+    <!-- 02 Joy -->
+    <a class="fruit-card" href="fruit-02-joy.html" style="border-top:4px solid #f5a623;">
+      <span class="fruit-num" style="background:#f5a623;">02</span>
+      <span class="fruit-emoji">&#x1F60A;</span>
+      <span class="fruit-name" style="color:#f5a623;">Joy</span>
+      <span class="fruit-ref">Nehemiah 8:10</span>
+      <span class="fruit-stars" id="star-02" aria-label="Joy stars"></span>
+    </a>
+
+    <!-- 03 Peace -->
+    <a class="fruit-card" href="fruit-03-peace.html" style="border-top:4px solid #4a9ec9;">
+      <span class="fruit-num" style="background:#4a9ec9;">03</span>
+      <span class="fruit-emoji">&#x262E;</span>
+      <span class="fruit-name" style="color:#4a9ec9;">Peace</span>
+      <span class="fruit-ref">John 14:27</span>
+      <span class="fruit-stars" id="star-03" aria-label="Peace stars"></span>
+    </a>
+
+    <!-- 04 Patience -->
+    <a class="fruit-card" href="fruit-04-patience.html" style="border-top:4px solid #7ba86a;">
+      <span class="fruit-num" style="background:#7ba86a;">04</span>
+      <span class="fruit-emoji">&#x231B;</span>
+      <span class="fruit-name" style="color:#7ba86a;">Patience</span>
+      <span class="fruit-ref">James 5:7</span>
+      <span class="fruit-stars" id="star-04" aria-label="Patience stars"></span>
+    </a>
+
+    <!-- 05 Kindness -->
+    <a class="fruit-card" href="fruit-05-kindness.html" style="border-top:4px solid #c98a6a;">
+      <span class="fruit-num" style="background:#c98a6a;">05</span>
+      <span class="fruit-emoji">&#x1F91D;</span>
+      <span class="fruit-name" style="color:#c98a6a;">Kindness</span>
+      <span class="fruit-ref">Ephesians 4:32</span>
+      <span class="fruit-stars" id="star-05" aria-label="Kindness stars"></span>
+    </a>
+
+    <!-- 06 Goodness -->
+    <a class="fruit-card" href="fruit-06-goodness.html" style="border-top:4px solid #5a8c3a;">
+      <span class="fruit-num" style="background:#5a8c3a;">06</span>
+      <span class="fruit-emoji">&#x2728;</span>
+      <span class="fruit-name" style="color:#5a8c3a;">Goodness</span>
+      <span class="fruit-ref">Ephesians 5:8-9</span>
+      <span class="fruit-stars" id="star-06" aria-label="Goodness stars"></span>
+    </a>
+
+    <!-- 07 Faithfulness -->
+    <a class="fruit-card" href="fruit-07-faithfulness.html" style="border-top:4px solid #6a8fc9;">
+      <span class="fruit-num" style="background:#6a8fc9;">07</span>
+      <span class="fruit-emoji">&#x1F4AA;</span>
+      <span class="fruit-name" style="color:#6a8fc9;">Faithfulness</span>
+      <span class="fruit-ref">Matthew 25:21</span>
+      <span class="fruit-stars" id="star-07" aria-label="Faithfulness stars"></span>
+    </a>
+
+    <!-- 08 Gentleness -->
+    <a class="fruit-card" href="fruit-08-gentleness.html" style="border-top:4px solid #9b7ab8;">
+      <span class="fruit-num" style="background:#9b7ab8;">08</span>
+      <span class="fruit-emoji">&#x1F54A;</span>
+      <span class="fruit-name" style="color:#9b7ab8;">Gentleness</span>
+      <span class="fruit-ref">Proverbs 15:1</span>
+      <span class="fruit-stars" id="star-08" aria-label="Gentleness stars"></span>
+    </a>
+
+    <!-- 09 Self-Control -->
+    <a class="fruit-card" href="fruit-09-self-control.html" style="border-top:4px solid #e8735a;">
+      <span class="fruit-num" style="background:#e8735a;">09</span>
+      <span class="fruit-emoji">&#x1F3AF;</span>
+      <span class="fruit-name" style="color:#e8735a;">Self-Control</span>
+      <span class="fruit-ref">Proverbs 25:28</span>
+      <span class="fruit-stars" id="star-09" aria-label="Self-Control stars"></span>
+    </a>
+
+  </div>
+
+  <!-- Bible Gateway link -->
+  <p style="margin-bottom:var(--space-lg);font-size:14px;color:#8a8078;">
+    Read Galatians 5:22-23 online:
+    <a href="https://www.biblegateway.com/passage/?search=Galatians+5%3A22-23&version=KJV" target="_blank" rel="noopener noreferrer">BibleGateway.com</a>
+  </p>
+
+  <footer>
+    Fruit of the Holy Spirit &middot; Bible Lessons Curriculum &middot; Free access
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  /* ---- Stars tracker for index ---- */
+  var fruitData = [
+    { key: 'fruit-01-love',   el: 'star-01' },
+    { key: 'fruit-02-joy',    el: 'star-02' },
+    { key: 'fruit-03-peace',  el: 'star-03' },
+    { key: 'fruit-04-patience',el: 'star-04' },
+    { key: 'fruit-05-kindness',el: 'star-05' },
+    { key: 'fruit-06-goodness',el: 'star-06' },
+    { key: 'fruit-07-faithfulness',el: 'star-07' },
+    { key: 'fruit-08-gentleness',el: 'star-08' },
+    { key: 'fruit-09-self-control',el: 'star-09' }
+  ];
+
+  var totalStars = 0;
+
+  function starString(count) {
+    var out = '';
+    for (var i = 0; i < 3; i++) {
+      out += (i < count) ? '⭐' : '☆';
+    }
+    return out;
+  }
+
+  try {
+    for (var f = 0; f < fruitData.length; f++) {
+      var raw = localStorage.getItem('bible-stars-' + fruitData[f].key);
+      var s = parseInt(raw, 10) || 0;
+      totalStars += s;
+      var el = document.getElementById(fruitData[f].el);
+      if (el) el.textContent = starString(s);
+    }
+  } catch(e) {}
+
+  var numEl = document.getElementById('totalStarsNum');
+  var fillEl = document.getElementById('totalFillBar');
+  if (numEl) numEl.textContent = totalStars;
+  if (fillEl) fillEl.style.width = Math.round(totalStars / 27 * 100) + '%';
+
+  /* ---- Particles ---- */
+  var emojis = ['🍅','🍎','🍐','🍇','🍓','🍈','🍁','🍒','🍄'];
+  var bgDiv = document.getElementById('particleBg');
+  if (bgDiv) {
+    for (var p = 0; p < 20; p++) {
+      var span = document.createElement('span');
+      span.className = 'particle';
+      span.textContent = emojis[p % emojis.length];
+      span.style.left = (Math.random() * 100) + '%';
+      span.style.fontSize = (18 + Math.random() * 18) + 'px';
+      span.style.animationDuration = (10 + Math.random() * 12) + 's';
+      span.style.animationDelay = (Math.random() * 8) + 's';
+      bgDiv.appendChild(span);
+    }
+  }
+})();
+</script>
+<script src="/assets/js/fullscreen.js?v=3"></script>
+</body>
+</html>

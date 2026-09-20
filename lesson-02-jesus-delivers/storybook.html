@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Jesus Delivers a Possessed Man</title>
+<style>:root{--accent:#7ba86a;--accent-light:#d8f3dc}
+/* ---------- fullscreen button ---------- */
+#fs-toggle{
+  position:fixed;bottom:18px;right:18px;z-index:9999;
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--accent,#7ba86a);background:var(--color-bg-alt,#fffdf9);
+  color:var(--accent,#7ba86a);font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+  -webkit-tap-highlight-color:transparent;user-select:none;font-family:sans-serif;
+}
+#fs-toggle:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(0,0,0,.2);background:var(--accent,#7ba86a);color:#fff}
+#fs-toggle:active{transform:scale(.94)}
+#fs-toggle.active{background:var(--accent,#7ba86a);color:#fff}
+@media print{#fs-toggle{display:none!important}}
+@media(max-width:480px){#fs-toggle{width:42px;height:42px;bottom:12px;right:12px}}
+</style>
+<style>
+/* Inline layout fallback — guarantees picture-left/text-right on desktop
+   even if an old storybooks.css is cached. External CSS still wins when fresh. */
+#bookInner{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)!important;width:100%;height:100%}
+#book{height:min(70vh,640px)!important;min-height:420px!important;overflow:hidden!important}
+.page-image{min-width:0!important;min-height:0!important;overflow:hidden!important}
+.page-text{min-width:0!important;min-height:0!important;overflow-y:auto!important;color:#2e2a24!important;background:#fffdf9!important;display:flex;flex-direction:column;justify-content:center}
+.page-text h2{color:#7ba86a!important}
+.page-text p{color:#2e2a24!important;font-size:19px;line-height:1.6}
+.page-image img{max-width:100%!important;max-height:100%!important;width:100%;height:100%;object-fit:contain}
+@media(max-width:768px){
+  #book{height:min(60vh,520px)!important;min-height:340px!important}
+  .page-text{padding:20px 24px!important}
+  .page-text p{font-size:17px}
+}
+@media(max-width:560px){
+  #book{height:78vh!important;min-height:0!important}
+  #bookInner{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:42% 58%!important}
+  .page-text{padding:14px 18px!important}
+  .page-text p{font-size:16px}
+}
+</style>
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<link rel="stylesheet" href="../../assets/css/storybooks.css?v=3">
+</head>
+<body data-grade="grad1-3">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="book" id="book">
+  <div class="nav-hint left">&#8592;</div>
+  <div class="nav-hint right">&#8594;</div>
+  <div class="book-inner" id="bookInner">
+    <div class="page-image" id="pageImage">
+      <img id="slideImg" src="" alt="Story illustration">
+    </div>
+    <div class="page-text" id="pageText">
+      <div class="page-number" id="pageNum"></div>
+      <h2 id="slideTitle"></h2>
+      <div id="slideParagraphs"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button id="prevBtn" disabled>&larr; Back</button>
+  <span class="page-indicator" id="indicator">1 / N</span>
+  <button id="nextBtn">Next &rarr;</button>
+</div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="keyboard-hint">Click anywhere on the book or use arrow keys to turn pages</div>
+<script>
+window.STORY_META = {"slug":"jesus-delivers","title":"Jesus Delivers a Possessed Man","starsKey":"story-jesus-delivers"};
+const slides = [
+  {
+    "img": "images/slide-01.jpg",
+    "title": "Jesus Delivers a Possessed Man",
+    "text": [
+      "A story from the book of Mark, chapter 1."
+    ]
+  },
+  {
+    "img": "",
+    "title": "Ice Breaker — The Powerful Voice",
+    "text": [
+      "<strong>Everyone stand up!</strong> On the count of three, shout these words in your loudest, most powerful voice:",
+      "<strong>\"BE QUIET!\"</strong>",
+      "Wow! That was loud! Now whisper the same words very softly.",
+      "Which one sounded more powerful? Which one would you listen to?",
+      "Today, Jesus speaks just TWO words to an evil spirit — and the spirit has to obey. Let's find out what happens."
+    ]
+  },
+  {
+    "img": "images/slide-02.jpg",
+    "title": "Jesus in Capernaum",
+    "text": [
+      "Jesus was staying in a town called Capernaum, right by the beautiful Sea of Galilee.",
+      "He was getting ready to teach the people."
+    ]
+  },
+  {
+    "img": "images/slide-03.jpg",
+    "title": "The Sabbath Day",
+    "text": [
+      "On the Sabbath day, Jesus went to the local synagogue.",
+      "That's where people gathered to worship God and learn about Him."
+    ]
+  },
+  {
+    "img": "images/slide-04.jpg",
+    "title": "The Religious Leaders",
+    "text": [
+      "The important Jewish leaders of the town were sitting there.",
+      "They had come to hear Jesus teach."
+    ]
+  },
+  {
+    "img": "images/slide-05.jpg",
+    "title": "Jairus Invites Jesus",
+    "text": [
+      "The leader of the synagogue was a man named Jairus.",
+      "He had invited Jesus to read the Scriptures and explain them to everyone."
+    ]
+  },
+  {
+    "img": "images/slide-06.jpg",
+    "title": "Jesus Reads the Scriptures",
+    "text": [
+      "Jesus stood up to read from the holy scrolls.",
+      "Everyone in the synagogue grew quiet and listened."
+    ]
+  },
+  {
+    "img": "images/slide-07.jpg",
+    "title": "Jesus Begins to Teach",
+    "text": [
+      "Jesus began to preach and explain God's Word.",
+      "He didn't sound like the other teachers — something about Him was different."
+    ]
+  },
+  {
+    "img": "images/slide-08.jpg",
+    "title": "Everyone Paid Attention",
+    "text": [
+      "The people listened closely to every word Jesus said.",
+      "They had never heard anyone teach like this before."
+    ]
+  },
+  {
+    "img": "images/slide-09.jpg",
+    "title": "Amazed at His Teaching",
+    "text": [
+      "They were amazed because Jesus taught with authority.",
+      "He didn't just repeat what others had said — He knew what He was talking about!"
+    ]
+  },
+  {
+    "img": "images/slide-10.jpg",
+    "title": "The Troubled Man",
+    "text": [
+      "But in the crowd, there was a man who had an evil spirit inside him.",
+      "The demon did not want to be near Jesus."
+    ]
+  },
+  {
+    "img": "images/slide-11.jpg",
+    "title": "The Demon Cries Out",
+    "text": [
+      "Suddenly, the man cried out loudly:",
+      "\"Go away! What do you want with us, Jesus of Nazareth? I know who you are — the Holy One of God!\""
+    ]
+  },
+  {
+    "img": "images/slide-12.jpg",
+    "title": "Jesus Commands the Demon",
+    "text": [
+      "Jesus looked at the demon and said firmly:",
+      "\"Be quiet! Come out of him!\""
+    ]
+  },
+  {
+    "img": "images/slide-13.jpg",
+    "title": "The Demon Throws the Man Down",
+    "text": [
+      "The demon threw the man down on the floor for everyone to see.",
+      "But Jesus was in control."
+    ]
+  },
+  {
+    "img": "images/slide-14.jpg",
+    "title": "The Man Is Free!",
+    "text": [
+      "Then the demon came out, leaving the man completely unharmed.",
+      "Jesus had set him free!"
+    ]
+  },
+  {
+    "img": "images/slide-15.jpg",
+    "title": "Completely Delivered",
+    "text": [
+      "The man stood up before everyone — healthy, calm, and free.",
+      "The evil spirit was gone!"
+    ]
+  },
+  {
+    "img": "images/slide-16.jpg",
+    "title": "Everyone Was Amazed",
+    "text": [
+      "Everyone in the synagogue was amazed.",
+      "\"What powerful words! Even evil spirits obey Him!\""
+    ]
+  },
+  {
+    "img": "images/slide-17.jpg",
+    "title": "News Spread Everywhere",
+    "text": [
+      "News about Jesus spread throughout the whole region.",
+      "Everyone wanted to know more about this man with such amazing power."
+    ]
+  },
+  {
+    "img": "",
+    "title": "Jesus Has Power!",
+    "text": [
+      "Jesus showed that He has power over evil.",
+      "He loves us and wants to set us free from everything that hurts us.",
+      "<em>Jesus' words have power. When He speaks, even the darkness has to listen.</em>"
+    ]
+  },
+  {
+    "img": "",
+    "title": "Fun Review!",
+    "quiz": [
+      {
+        "q": "Where did Jesus meet the man possessed by demons?",
+        "options": [
+          "In Capernaum synagogue",
+          "On the road to Jerusalem",
+          "At the Sea of Galilee",
+          "In the Temple"
+        ],
+        "correct": 0,
+        "explanation": "Jesus was teaching in the Capernaum synagogue when this happened."
+      },
+      {
+        "q": "What did the demon cry out about Jesus?",
+        "options": [
+          "Go away!",
+          "You are the Holy One of God!",
+          "Leave us alone!",
+          "I will destroy you!"
+        ],
+        "correct": 1,
+        "explanation": "The demon recognized Jesus as the Holy One of God!"
+      },
+      {
+        "q": "What happened after Jesus spoke to the demon?",
+        "options": [
+          "The man fell asleep",
+          "The demon left and he was completely free",
+          "He had to stay in the synagogue",
+          "He became very sick"
+        ],
+        "correct": 1,
+        "explanation": "Jesus commanded the demon out and the man was left healthy and calm."
+      }
+    ]
+  }
+];
+;
+</script>
+<script src="../../assets/js/games.js?v=3"></script>
+<script src="../../assets/js/storybook.js?v=3"></script>
+<script>Storybook.init();</script>
+
+<script>
+(function(){
+  if (document.getElementById('fs-toggle')) return;
+  var btn = document.createElement('button');
+  btn.id = 'fs-toggle';
+  btn.setAttribute('aria-label', 'Toggle fullscreen');
+  btn.setAttribute('title', 'Fullscreen (F key)');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var exitIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="4 8 4 3 9 3"/><polyline points="20 16 20 21 15 21"/><line x1="4" y1="3" x2="11" y2="10"/><line x1="20" y1="21" x2="13" y2="14"/></svg>';
+  function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || document.mozFullScreenElement); }
+  function enter(){ var el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||el.mozRequestFullScreen).call(el).catch(function(){}); }
+  function exit(){ (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen||document.mozCancelFullScreen).call(document).catch(function(){}); }
+  function update(){
+    if(isFS()){ btn.innerHTML=exitIcon; btn.classList.add('active'); btn.setAttribute('title','Exit fullscreen (F or Esc)'); }
+    else { btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'; btn.classList.remove('active'); btn.setAttribute('title','Fullscreen (F key)'); }
+  }
+  btn.addEventListener('click',function(){ isFS()?exit():enter(); });
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('msfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){
+      var tag=document.activeElement?document.activeElement.tagName:'';
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault(); isFS()?exit():enter();
+    }
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+
+</body>
+</html>

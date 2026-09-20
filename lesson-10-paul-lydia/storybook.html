@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Paul Meets Lydia in Philippi</title>
+<style>:root{--accent:#7ba86a;--accent-light:#d8f3dc}
+/* ---------- fullscreen button ---------- */
+#fs-toggle{
+  position:fixed;bottom:18px;right:18px;z-index:9999;
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--accent,#7ba86a);background:var(--color-bg-alt,#fffdf9);
+  color:var(--accent,#7ba86a);font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+  -webkit-tap-highlight-color:transparent;user-select:none;font-family:sans-serif;
+}
+#fs-toggle:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(0,0,0,.2);background:var(--accent,#7ba86a);color:#fff}
+#fs-toggle:active{transform:scale(.94)}
+#fs-toggle.active{background:var(--accent,#7ba86a);color:#fff}
+@media print{#fs-toggle{display:none!important}}
+@media(max-width:480px){#fs-toggle{width:42px;height:42px;bottom:12px;right:12px}}
+</style>
+<style>
+/* Inline layout fallback — guarantees picture-left/text-right on desktop
+   even if an old storybooks.css is cached. External CSS still wins when fresh. */
+#bookInner{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)!important;width:100%;height:100%}
+#book{height:min(70vh,640px)!important;min-height:420px!important;overflow:hidden!important}
+.page-image{min-width:0!important;min-height:0!important;overflow:hidden!important}
+.page-text{min-width:0!important;min-height:0!important;overflow-y:auto!important;color:#2e2a24!important;background:#fffdf9!important;display:flex;flex-direction:column;justify-content:center}
+.page-text h2{color:#7ba86a!important}
+.page-text p{color:#2e2a24!important;font-size:19px;line-height:1.6}
+.page-image img{max-width:100%!important;max-height:100%!important;width:100%;height:100%;object-fit:contain}
+@media(max-width:768px){
+  #book{height:min(60vh,520px)!important;min-height:340px!important}
+  .page-text{padding:20px 24px!important}
+  .page-text p{font-size:17px}
+}
+@media(max-width:560px){
+  #book{height:78vh!important;min-height:0!important}
+  #bookInner{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:42% 58%!important}
+  .page-text{padding:14px 18px!important}
+  .page-text p{font-size:16px}
+}
+</style>
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<link rel="stylesheet" href="../../assets/css/storybooks.css?v=3">
+</head>
+<body data-grade="grad1-3">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="book" id="book">
+  <div class="nav-hint left">&#8592;</div>
+  <div class="nav-hint right">&#8594;</div>
+  <div class="book-inner" id="bookInner">
+    <div class="page-image" id="pageImage">
+      <img id="slideImg" src="" alt="Story illustration">
+    </div>
+    <div class="page-text" id="pageText">
+      <div class="page-number" id="pageNum"></div>
+      <h2 id="slideTitle"></h2>
+      <div id="slideParagraphs"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button id="prevBtn" disabled>&larr; Back</button>
+  <span class="page-indicator" id="indicator">1 / N</span>
+  <button id="nextBtn">Next &rarr;</button>
+</div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="keyboard-hint">Click anywhere on the book or use arrow keys to turn pages</div>
+<script>
+window.STORY_META = {"slug":"paul-lydia","title":"Paul Meets Lydia in Philippi","starsKey":"story-paul-lydia"};
+const slides = [
+  {
+    "img": "images/slide-01.jpg",
+    "title": "Paul Meets Lydia",
+    "text": [
+      "A story from the book of Acts, chapter 16."
+    ]
+  },
+  {
+    "img": "",
+    "title": "Ice Breaker — Who's Missing?",
+    "text": [
+      "<strong>Look around the room. Think of someone you know who isn't here today.</strong>",
+      "Maybe a friend, a neighbour, someone from your street.",
+      "Now imagine travelling to a whole NEW country where nobody knows about Jesus at all.",
+      "That's what Paul did! He went to a new continent to tell people about Jesus for the very first time. Let's see who he met!"
+    ]
+  },
+  {
+    "img": "images/slide-02.jpg",
+    "title": "Paul and His Friends",
+    "text": [
+      "Paul and Silas had been travelling through many towns, encouraging Christians.",
+      "A young man named Timothy joined them along the way."
+    ]
+  },
+  {
+    "img": "images/slide-03.jpg",
+    "title": "A Vision From God",
+    "text": [
+      "At Troas, Paul had a vision of a man from Macedonia pleading:",
+      "\"Come over here and help us!\""
+    ]
+  },
+  {
+    "img": "images/slide-04.jpg",
+    "title": "Sailing to Macedonia",
+    "text": [
+      "Paul and his friends sailed across the sea to Macedonia.",
+      "This was the first time the gospel had reached Europe!"
+    ]
+  },
+  {
+    "img": "images/slide-05.jpg",
+    "title": "The City of Philippi",
+    "text": [
+      "They arrived at the Roman colony of Philippi.",
+      "It was a busy city with markets, a library, and many temples to false gods."
+    ]
+  },
+  {
+    "img": "images/slide-06.jpg",
+    "title": "A Place of Prayer",
+    "text": [
+      "On the Sabbath day, Paul learned that a group of women met for prayer by the river.",
+      "They met outside the city wall."
+    ]
+  },
+  {
+    "img": "images/slide-07.jpg",
+    "title": "Lydia - A Businesswoman",
+    "text": [
+      "One of the women was named Lydia. She was from Thyatira and sold purple cloth.",
+      "Purple dye was very expensive — only rich and royal people wore it!"
+    ]
+  },
+  {
+    "img": "images/slide-08.jpg",
+    "title": "Joining the Prayer Meeting",
+    "text": [
+      "Paul and his companions asked to join the women meeting by the river.",
+      "They came humbly, ready to share God's word."
+    ]
+  },
+  {
+    "img": "images/slide-09.jpg",
+    "title": "Paul Taught Them About Jesus",
+    "text": [
+      "Paul taught the women from the Scriptures and told them about Jesus.",
+      "Lydia listened carefully to every word."
+    ]
+  },
+  {
+    "img": "images/slide-10.jpg",
+    "title": "The Lord Opened Her Heart",
+    "text": [
+      "Lydia already worshipped God. As Paul spoke, the Lord opened her heart.",
+      "She understood and believed in Jesus!"
+    ]
+  },
+  {
+    "img": "images/slide-11.jpg",
+    "title": "Baptised!",
+    "text": [
+      "Lydia asked to be baptised as a follower of Jesus.",
+      "She and her whole household were baptised that day."
+    ]
+  },
+  {
+    "img": "images/slide-12.jpg",
+    "title": "Lydia's Invitation",
+    "text": [
+      "Lydia urged Paul and his friends, \"Please stay at my house while you are in Philippi.\"",
+      "She wanted to serve them!"
+    ]
+  },
+  {
+    "img": "images/slide-13.jpg",
+    "title": "A Home Base",
+    "text": [
+      "After some persuasion, Paul agreed and made Lydia's home their base.",
+      "Her home became a meeting place for the first Christians in Philippi."
+    ]
+  },
+  {
+    "img": "images/slide-14.jpg",
+    "title": "Lydia the Helper",
+    "text": [
+      "Lydia later supported Paul's missionary work financially.",
+      "She was a successful businesswoman who put God first in her life."
+    ]
+  },
+  {
+    "img": "images/slide-15.jpg",
+    "title": "Open Hearts, Open Homes",
+    "text": [
+      "Lydia heard about Jesus, believed, was baptised, and opened her home to help.",
+      "<em>When God opens our hearts, we can use what we have — our homes, our time, our talents — to serve Him.</em>"
+    ]
+  },
+  {
+    "img": "",
+    "title": "Fun Review!",
+    "quiz": [
+      {
+        "q": "What kind of cloth did Lydia sell?",
+        "options": [
+          "White linen",
+          "Purple cloth",
+          "Red wool",
+          "Green silk"
+        ],
+        "correct": 1,
+        "explanation": "Lydia sold purple cloth, which was very expensive and worn by royalty."
+      },
+      {
+        "q": "Where did Paul and the women meet for prayer?",
+        "options": [
+          "In the Temple",
+          "By the river outside the city wall",
+          "In Lydia's shop",
+          "In the market"
+        ],
+        "correct": 1,
+        "explanation": "Paul found a group of women meeting for prayer by the river outside Philippi."
+      },
+      {
+        "q": "What was the first continent where the gospel was preached?",
+        "options": [
+          "Asia",
+          "Africa",
+          "Europe (Macedonia)",
+          "South America"
+        ],
+        "correct": 2,
+        "explanation": "Macedonia is in Europe, making it the first place the gospel reached in Europe."
+      }
+    ]
+  }
+];
+</script>
+<script src="../../assets/js/games.js?v=3"></script>
+<script src="../../assets/js/storybook.js?v=3"></script>
+<script>Storybook.init();</script>
+
+<script>
+(function(){
+  if (document.getElementById('fs-toggle')) return;
+  var btn = document.createElement('button');
+  btn.id = 'fs-toggle';
+  btn.setAttribute('aria-label', 'Toggle fullscreen');
+  btn.setAttribute('title', 'Fullscreen (F key)');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var exitIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="4 8 4 3 9 3"/><polyline points="20 16 20 21 15 21"/><line x1="4" y1="3" x2="11" y2="10"/><line x1="20" y1="21" x2="13" y2="14"/></svg>';
+  function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || document.mozFullScreenElement); }
+  function enter(){ var el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||el.mozRequestFullScreen).call(el).catch(function(){}); }
+  function exit(){ (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen||document.mozCancelFullScreen).call(document).catch(function(){}); }
+  function update(){
+    if(isFS()){ btn.innerHTML=exitIcon; btn.classList.add('active'); btn.setAttribute('title','Exit fullscreen (F or Esc)'); }
+    else { btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'; btn.classList.remove('active'); btn.setAttribute('title','Fullscreen (F key)'); }
+  }
+  btn.addEventListener('click',function(){ isFS()?exit():enter(); });
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('msfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){
+      var tag=document.activeElement?document.activeElement.tagName:'';
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault(); isFS()?exit():enter();
+    }
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+
+</body>
+</html>

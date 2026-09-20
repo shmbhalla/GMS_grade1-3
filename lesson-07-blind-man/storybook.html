@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Jesus Heals a Blind Man</title>
+<style>:root{--accent:#7ba86a;--accent-light:#d8f3dc}
+/* ---------- fullscreen button ---------- */
+#fs-toggle{
+  position:fixed;bottom:18px;right:18px;z-index:9999;
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--accent,#7ba86a);background:var(--color-bg-alt,#fffdf9);
+  color:var(--accent,#7ba86a);font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+  -webkit-tap-highlight-color:transparent;user-select:none;font-family:sans-serif;
+}
+#fs-toggle:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(0,0,0,.2);background:var(--accent,#7ba86a);color:#fff}
+#fs-toggle:active{transform:scale(.94)}
+#fs-toggle.active{background:var(--accent,#7ba86a);color:#fff}
+@media print{#fs-toggle{display:none!important}}
+@media(max-width:480px){#fs-toggle{width:42px;height:42px;bottom:12px;right:12px}}
+</style>
+<style>
+/* Inline layout fallback — guarantees picture-left/text-right on desktop
+   even if an old storybooks.css is cached. External CSS still wins when fresh. */
+#bookInner{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)!important;width:100%;height:100%}
+#book{height:min(70vh,640px)!important;min-height:420px!important;overflow:hidden!important}
+.page-image{min-width:0!important;min-height:0!important;overflow:hidden!important}
+.page-text{min-width:0!important;min-height:0!important;overflow-y:auto!important;color:#2e2a24!important;background:#fffdf9!important;display:flex;flex-direction:column;justify-content:center}
+.page-text h2{color:#7ba86a!important}
+.page-text p{color:#2e2a24!important;font-size:19px;line-height:1.6}
+.page-image img{max-width:100%!important;max-height:100%!important;width:100%;height:100%;object-fit:contain}
+@media(max-width:768px){
+  #book{height:min(60vh,520px)!important;min-height:340px!important}
+  .page-text{padding:20px 24px!important}
+  .page-text p{font-size:17px}
+}
+@media(max-width:560px){
+  #book{height:78vh!important;min-height:0!important}
+  #bookInner{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:42% 58%!important}
+  .page-text{padding:14px 18px!important}
+  .page-text p{font-size:16px}
+}
+</style>
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<link rel="stylesheet" href="../../assets/css/storybooks.css?v=3">
+</head>
+<body data-grade="grad1-3">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="book" id="book">
+  <div class="nav-hint left">&#8592;</div>
+  <div class="nav-hint right">&#8594;</div>
+  <div class="book-inner" id="bookInner">
+    <div class="page-image" id="pageImage">
+      <img id="slideImg" src="" alt="Story illustration">
+    </div>
+    <div class="page-text" id="pageText">
+      <div class="page-number" id="pageNum"></div>
+      <h2 id="slideTitle"></h2>
+      <div id="slideParagraphs"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button id="prevBtn" disabled>&larr; Back</button>
+  <span class="page-indicator" id="indicator">1 / N</span>
+  <button id="nextBtn">Next &rarr;</button>
+</div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="keyboard-hint">Click anywhere on the book or use arrow keys to turn pages</div>
+<script>
+window.STORY_META = {"slug":"blind-man","title":"Jesus Heals a Blind Man","starsKey":"story-blind-man"};
+const slides = [
+  {
+    "img": "images/slide-01.jpg",
+    "title": "Jesus Heals a Blind Man",
+    "text": [
+      "A story from the book of Mark, chapter 10."
+    ]
+  },
+  {
+    "img": "",
+    "title": "Ice Breaker — Can You Hear Me?",
+    "text": [
+      "<strong>Everyone close your eyes.</strong> Keep them closed. Now listen carefully.",
+      "I'm going to say a word. Raise your hand when you hear it.",
+      "Say different words, then finally say <strong>\"JESUS\"</strong>.",
+      "Open your eyes! Today, a blind man named Bartimaeus couldn't see Jesus — but he could HEAR that He was passing by. And he shouted as loud as he could!"
+    ]
+  },
+  {
+    "img": "images/slide-02.jpg",
+    "title": "The Road to Jericho",
+    "text": [
+      "Jesus, His disciples, and a large crowd were walking toward the city of Jericho.",
+      "It was a busy, dusty road full of people."
+    ]
+  },
+  {
+    "img": "images/slide-03.jpg",
+    "title": "Bartimaeus the Blind Beggar",
+    "text": [
+      "A blind man named Bartimaeus was sitting by the roadside begging.",
+      "He couldn't see. He couldn't work. Every day he sat and hoped for help."
+    ]
+  },
+  {
+    "img": "images/slide-04.jpg",
+    "title": "Jesus Is Coming!",
+    "text": [
+      "When Bartimaeus heard that Jesus of Nazareth was passing by, he began to shout!",
+      "\"Jesus, Son of David, have mercy on me!\""
+    ]
+  },
+  {
+    "img": "images/slide-05.jpg",
+    "title": "Be Quiet!",
+    "text": [
+      "Many people in the crowd told him to be quiet.",
+      "\"Stop shouting!\" they said. \"You're bothering everyone!\""
+    ]
+  },
+  {
+    "img": "images/slide-06.jpg",
+    "title": "He Shouted Even Louder!",
+    "text": [
+      "But Bartimaeus shouted even louder: \"SON OF DAVID, HAVE MERCY ON ME!\"",
+      "He would not be silenced!"
+    ]
+  },
+  {
+    "img": "images/slide-07.jpg",
+    "title": "Jesus Stopped",
+    "text": [
+      "Jesus heard Bartimaeus crying out — and He STOPPED.",
+      "\"Call him,\" Jesus said."
+    ]
+  },
+  {
+    "img": "images/slide-08.jpg",
+    "title": "Cheer Up! He's Calling You!",
+    "text": [
+      "The people told Bartimaeus, \"Cheer up! On your feet! Jesus is calling you!\"",
+      "Bartimaeus threw his cloak aside, jumped up, and went to Jesus."
+    ]
+  },
+  {
+    "img": "images/slide-09.jpg",
+    "title": "What Do You Want?",
+    "text": [
+      "Jesus asked Bartimaeus, \"What do you want me to do for you?\"",
+      "Jesus wanted to hear his request."
+    ]
+  },
+  {
+    "img": "images/slide-10.jpg",
+    "title": "I Want to See!",
+    "text": [
+      "Bartimaeus answered, \"Teacher, I want to see.\"",
+      "Simple. Honest. Full of faith."
+    ]
+  },
+  {
+    "img": "images/slide-11.jpg",
+    "title": "Your Faith Has Healed You",
+    "text": [
+      "Jesus said, \"Go! Your faith has healed you.\"",
+      "Immediately, Bartimaeus could see!"
+    ]
+  },
+  {
+    "img": "images/slide-12.jpg",
+    "title": "He Could See!",
+    "text": [
+      "Bartimaeus opened his eyes and looked around in amazement.",
+      "He could see colours, faces, trees, the sky — everything!"
+    ]
+  },
+  {
+    "img": "images/slide-13.jpg",
+    "title": "Praising God",
+    "text": [
+      "Bartimaeus began praising God with all his heart!",
+      "He was so happy!"
+    ]
+  },
+  {
+    "img": "images/slide-14.jpg",
+    "title": "The Crowd Praised God Too",
+    "text": [
+      "When the crowd saw that Bartimaeus could see, they also praised God.",
+      "Everyone was amazed at what Jesus had done."
+    ]
+  },
+  {
+    "img": "images/slide-15.jpg",
+    "title": "Jesus Hears Us Too",
+    "text": [
+      "Bartimaeus couldn't see Jesus, but he called out to Him anyway.",
+      "<em>Jesus hears us when we call — even when others tell us to be quiet. Don't ever stop calling out to Him!</em>"
+    ]
+  },
+  {
+    "img": "",
+    "title": "Fun Review!",
+    "quiz": [
+      {
+        "q": "What was the blind man's name?",
+        "options": [
+          "Simon",
+          "Peter",
+          "Bartimaeus",
+          "Andrew"
+        ],
+        "correct": 2,
+        "explanation": "The blind beggar's name was Bartimaeus."
+      },
+      {
+        "q": "What did Bartimaeus shout as Jesus passed by?",
+        "options": [
+          "Help me!",
+          "Give me money!",
+          "Jesus, Son of David, have mercy on me!",
+          "Wait for me!"
+        ],
+        "correct": 2,
+        "explanation": "He shouted 'Jesus, Son of David, have mercy on me!'"
+      },
+      {
+        "q": "What did Jesus say to Bartimaeus that healed him?",
+        "options": [
+          "Take your mat and walk",
+          "Go! Your faith has healed you",
+          "Open your eyes!",
+          "Come to me"
+        ],
+        "correct": 1,
+        "explanation": "Jesus said 'Go! Your faith has healed you,' and Bartimaeus received his sight."
+      }
+    ]
+  }
+];
+</script>
+<script src="../../assets/js/games.js?v=3"></script>
+<script src="../../assets/js/storybook.js?v=3"></script>
+<script>Storybook.init();</script>
+
+<script>
+(function(){
+  if (document.getElementById('fs-toggle')) return;
+  var btn = document.createElement('button');
+  btn.id = 'fs-toggle';
+  btn.setAttribute('aria-label', 'Toggle fullscreen');
+  btn.setAttribute('title', 'Fullscreen (F key)');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var exitIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="4 8 4 3 9 3"/><polyline points="20 16 20 21 15 21"/><line x1="4" y1="3" x2="11" y2="10"/><line x1="20" y1="21" x2="13" y2="14"/></svg>';
+  function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || document.mozFullScreenElement); }
+  function enter(){ var el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||el.mozRequestFullScreen).call(el).catch(function(){}); }
+  function exit(){ (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen||document.mozCancelFullScreen).call(document).catch(function(){}); }
+  function update(){
+    if(isFS()){ btn.innerHTML=exitIcon; btn.classList.add('active'); btn.setAttribute('title','Exit fullscreen (F or Esc)'); }
+    else { btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'; btn.classList.remove('active'); btn.setAttribute('title','Fullscreen (F key)'); }
+  }
+  btn.addEventListener('click',function(){ isFS()?exit():enter(); });
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('msfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){
+      var tag=document.activeElement?document.activeElement.tagName:'';
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault(); isFS()?exit():enter();
+    }
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+
+</body>
+</html>

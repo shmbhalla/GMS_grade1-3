@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Jesus Forgives and Heals the Paralyzed Man</title>
+<style>:root{--accent:#7ba86a;--accent-light:#d8f3dc}
+/* ---------- fullscreen button ---------- */
+#fs-toggle{
+  position:fixed;bottom:18px;right:18px;z-index:9999;
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--accent,#7ba86a);background:var(--color-bg-alt,#fffdf9);
+  color:var(--accent,#7ba86a);font-size:22px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  transition:transform .2s,box-shadow .2s,background .2s,color .2s;
+  -webkit-tap-highlight-color:transparent;user-select:none;font-family:sans-serif;
+}
+#fs-toggle:hover{transform:scale(1.12);box-shadow:0 4px 20px rgba(0,0,0,.2);background:var(--accent,#7ba86a);color:#fff}
+#fs-toggle:active{transform:scale(.94)}
+#fs-toggle.active{background:var(--accent,#7ba86a);color:#fff}
+@media print{#fs-toggle{display:none!important}}
+@media(max-width:480px){#fs-toggle{width:42px;height:42px;bottom:12px;right:12px}}
+</style>
+<style>
+/* Inline layout fallback — guarantees picture-left/text-right on desktop
+   even if an old storybooks.css is cached. External CSS still wins when fresh. */
+#bookInner{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)!important;width:100%;height:100%}
+#book{height:min(70vh,640px)!important;min-height:420px!important;overflow:hidden!important}
+.page-image{min-width:0!important;min-height:0!important;overflow:hidden!important}
+.page-text{min-width:0!important;min-height:0!important;overflow-y:auto!important;color:#2e2a24!important;background:#fffdf9!important;display:flex;flex-direction:column;justify-content:center}
+.page-text h2{color:#7ba86a!important}
+.page-text p{color:#2e2a24!important;font-size:19px;line-height:1.6}
+.page-image img{max-width:100%!important;max-height:100%!important;width:100%;height:100%;object-fit:contain}
+@media(max-width:768px){
+  #book{height:min(60vh,520px)!important;min-height:340px!important}
+  .page-text{padding:20px 24px!important}
+  .page-text p{font-size:17px}
+}
+@media(max-width:560px){
+  #book{height:78vh!important;min-height:0!important}
+  #bookInner{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:42% 58%!important}
+  .page-text{padding:14px 18px!important}
+  .page-text p{font-size:16px}
+}
+</style>
+<link rel="stylesheet" href="../../assets/css/design-tokens.css?v=3">
+<link rel="stylesheet" href="../../assets/css/storybooks.css?v=3">
+</head>
+<body data-grade="grad1-3">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="book" id="book">
+  <div class="nav-hint left">&#8592;</div>
+  <div class="nav-hint right">&#8594;</div>
+  <div class="book-inner" id="bookInner">
+    <div class="page-image" id="pageImage">
+      <img id="slideImg" src="" alt="Story illustration">
+    </div>
+    <div class="page-text" id="pageText">
+      <div class="page-number" id="pageNum"></div>
+      <h2 id="slideTitle"></h2>
+      <div id="slideParagraphs"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button id="prevBtn" disabled>&larr; Back</button>
+  <span class="page-indicator" id="indicator">1 / N</span>
+  <button id="nextBtn">Next &rarr;</button>
+</div>
+<div class="progress-dots" id="progressDots"></div>
+<div class="keyboard-hint">Click anywhere on the book or use arrow keys to turn pages</div>
+<script>
+window.STORY_META = {"slug":"paralyzed-man","title":"Jesus Forgives and Heals the Paralyzed Man","starsKey":"story-paralyzed-man"};
+const slides = [
+  {
+    "img": "images/slide-01.jpg",
+    "title": "Jesus Forgives and Heals",
+    "text": [
+      "A story from the book of Mark, chapter 2."
+    ]
+  },
+  {
+    "img": "",
+    "title": "Ice Breaker — Helping Hands",
+    "text": [
+      "Find a partner. One person closes their eyes.",
+      "The other person must guide them safely across the room using only their voice. No touching!",
+      "Try it! Switch places after.",
+      "Ask: <em>How did it feel to trust someone else to guide you? How did it feel to be the guide?</em>",
+      "Today, four friends help their paralyzed friend get to Jesus — and they don’t give up, no matter what!"
+    ]
+  },
+  {
+    "img": "images/slide-02.jpg",
+    "title": "Pharisees and Teachers Gather",
+    "text": [
+      "Pharisees and teachers of the law came from all over to hear Jesus.",
+      "Word about Him was spreading everywhere!"
+    ]
+  },
+  {
+    "img": "images/slide-03.jpg",
+    "title": "Large Crowds Gather",
+    "text": [
+      "Huge crowds of people gathered to see Jesus.",
+      "They had heard about the amazing things He was doing."
+    ]
+  },
+  {
+    "img": "images/slide-04.jpg",
+    "title": "The House Was Full",
+    "text": [
+      "Jesus went into a house to teach.",
+      "So many people crowded in that there was no room left — not even by the door!"
+    ]
+  },
+  {
+    "img": "images/slide-05.jpg",
+    "title": "Four Men and Their Friend",
+    "text": [
+      "Four men arrived carrying their paralyzed friend on a mat.",
+      "They desperately wanted to bring him to Jesus."
+    ]
+  },
+  {
+    "img": "images/slide-06.jpg",
+    "title": "The Crowd Was Too Big",
+    "text": [
+      "When they got to the house, the crowd was too large.",
+      "They couldn’t get through the door or the window!"
+    ]
+  },
+  {
+    "img": "images/slide-07.jpg",
+    "title": "Up to the Roof!",
+    "text": [
+      "But these friends did not give up!",
+      "They carried their friend up the stairs at the side of the house and onto the flat roof."
+    ]
+  },
+  {
+    "img": "images/slide-08.jpg",
+    "title": "Digging Through the Roof",
+    "text": [
+      "The roof was made of clay and sticks. The men started digging and clawing at it.",
+      "They were determined!"
+    ]
+  },
+  {
+    "img": "images/slide-09.jpg",
+    "title": "Dust Falling on Everyone",
+    "text": [
+      "Inside, everyone heard a strange sound above them.",
+      "Dust and pieces of clay started falling from the ceiling!"
+    ]
+  },
+  {
+    "img": "images/slide-10.jpg",
+    "title": "A Hole in the Roof",
+    "text": [
+      "The men made a hole big enough to lower their friend down.",
+      "Everyone inside looked up in surprise!"
+    ]
+  },
+  {
+    "img": "images/slide-11.jpg",
+    "title": "Jesus Did Not Stop Them",
+    "text": [
+      "Jesus looked up and saw what the men were doing.",
+      "He did not tell them to stop. He saw something special in their hearts."
+    ]
+  },
+  {
+    "img": "images/slide-12.jpg",
+    "title": "Lowered Right to Jesus",
+    "text": [
+      "Gently, the friends lowered their paralyzed friend down through the roof.",
+      "The mat came to rest right in front of Jesus!"
+    ]
+  },
+  {
+    "img": "images/slide-13.jpg",
+    "title": "Everyone Watched",
+    "text": [
+      "The room went quiet. Everyone watched to see what Jesus would do.",
+      "The paralyzed man looked up at Jesus with hope."
+    ]
+  },
+  {
+    "img": "images/slide-14.jpg",
+    "title": "Jesus Sees Their Faith",
+    "text": [
+      "Jesus saw the faith of the four friends and the paralyzed man.",
+      "He said: “Friend, your sins are forgiven.”"
+    ]
+  },
+  {
+    "img": "images/slide-15.jpg",
+    "title": "The Leaders Were Shocked",
+    "text": [
+      "The religious leaders were shocked.",
+      "“Who does He think He is? Only God can forgive sins!” they thought."
+    ]
+  },
+  {
+    "img": "images/slide-16.jpg",
+    "title": "Jesus Knew Their Thoughts",
+    "text": [
+      "Jesus knew exactly what they were thinking.",
+      "“Why are you thinking these things?” He asked."
+    ]
+  },
+  {
+    "img": "images/slide-17.jpg",
+    "title": "Which Is Easier?",
+    "text": [
+      "“Which is easier,” Jesus asked, “to say ‘Your sins are forgiven,’ or ‘Get up and walk’?”",
+      "Jesus wanted to show them who He really was."
+    ]
+  },
+  {
+    "img": "images/slide-18.jpg",
+    "title": "Get Up and Walk!",
+    "text": [
+      "Jesus said to the paralyzed man:",
+      "“I tell you, get up, take your mat, and go home!”"
+    ]
+  },
+  {
+    "img": "images/slide-19.jpg",
+    "title": "The Man Stood Up!",
+    "text": [
+      "Right there in front of everyone, the man stood up!",
+      "He rolled up his mat and got ready to walk."
+    ]
+  },
+  {
+    "img": "images/slide-20.jpg",
+    "title": "Walking and Praising God",
+    "text": [
+      "The man who was paralyzed walked out, praising God!",
+      "He was completely healed!"
+    ]
+  },
+  {
+    "img": "images/slide-21.jpg",
+    "title": "Everyone Was Amazed",
+    "text": [
+      "The people were amazed and praised God.",
+      "“We have seen amazing things today!” they said."
+    ]
+  },
+  {
+    "img": "images/slide-22.jpg",
+    "title": "Jesus Can Forgive and Heal",
+    "text": [
+      "Jesus showed He has power to forgive sins AND heal bodies.",
+      "The four friends did whatever it took to bring their friend to Jesus.",
+      "<em>We can be that kind of friend too — caring, determined, and full of faith.</em>"
+    ]
+  },
+  {
+    "img": "",
+    "title": "Fun Review!",
+    "quiz": [
+      {
+        "q": "How did the four friends bring their paralyzed friend to Jesus?",
+        "options": [
+          "They pushed through the crowd",
+          "They carried him up the stairs and lowered him through the roof",
+          "They walked around the building",
+          "They called out to Jesus from outside"
+        ],
+        "correct": 1,
+        "explanation": "They climbed to the flat roof, made a hole, and lowered the mat with their friend."
+      },
+      {
+        "q": "What did Jesus say FIRST to the paralyzed man?",
+        "options": [
+          "Get up and walk!",
+          "Take your mat home",
+          "Your sins are forgiven",
+          "Do you want to be healed?"
+        ],
+        "correct": 2,
+        "explanation": "Jesus first said 'Friend, your sins are forgiven' to show His power to forgive."
+      },
+      {
+        "q": "Why did the religious leaders think this was blasphemy?",
+        "options": [
+          "Jesus touched a sick man",
+          "Only God can forgive sins, they believed",
+          "Jesus healed on the Sabbath",
+          "The man was a stranger"
+        ],
+        "correct": 1,
+        "explanation": "Forgiving sins was something only God could do."
+      }
+    ]
+  }
+];
+</script>
+<script src="../../assets/js/games.js?v=3"></script>
+<script src="../../assets/js/storybook.js?v=3"></script>
+<script>Storybook.init();</script>
+
+<script>
+(function(){
+  if (document.getElementById('fs-toggle')) return;
+  var btn = document.createElement('button');
+  btn.id = 'fs-toggle';
+  btn.setAttribute('aria-label', 'Toggle fullscreen');
+  btn.setAttribute('title', 'Fullscreen (F key)');
+  btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var exitIcon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="4 8 4 3 9 3"/><polyline points="20 16 20 21 15 21"/><line x1="4" y1="3" x2="11" y2="10"/><line x1="20" y1="21" x2="13" y2="14"/></svg>';
+  function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || document.mozFullScreenElement); }
+  function enter(){ var el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||el.mozRequestFullScreen).call(el).catch(function(){}); }
+  function exit(){ (document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen||document.mozCancelFullScreen).call(document).catch(function(){}); }
+  function update(){
+    if(isFS()){ btn.innerHTML=exitIcon; btn.classList.add('active'); btn.setAttribute('title','Exit fullscreen (F or Esc)'); }
+    else { btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'; btn.classList.remove('active'); btn.setAttribute('title','Fullscreen (F key)'); }
+  }
+  btn.addEventListener('click',function(){ isFS()?exit():enter(); });
+  document.addEventListener('fullscreenchange',update);
+  document.addEventListener('webkitfullscreenchange',update);
+  document.addEventListener('msfullscreenchange',update);
+  document.addEventListener('mozfullscreenchange',update);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){
+      var tag=document.activeElement?document.activeElement.tagName:'';
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||tag==='BUTTON') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault(); isFS()?exit():enter();
+    }
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+
+</body>
+</html>
